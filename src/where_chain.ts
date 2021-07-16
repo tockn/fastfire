@@ -24,13 +24,12 @@ export class WhereChain<T> {
     })
   }
 
-  async where(
+  where(
     fieldPath: string | firebase.firestore.FieldPath,
     opStr: firebase.firestore.WhereFilterOp,
     value: any
-  ): Promise<WhereChain<T>> {
-    const query = await this.collectionRef.where(fieldPath, opStr, value)
-    return new WhereChain<T>(this.documentClass, query)
+  ): WhereChain<T> {
+    return new WhereChain<T>(this.documentClass, this.collectionRef.where(fieldPath, opStr, value))
   }
 
   private fromSnapshot(snapshot: firebase.firestore.DocumentSnapshot): T | null {

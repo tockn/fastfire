@@ -1,6 +1,6 @@
 import firebase from "firebase";
 import { WhereChain } from "./where_chain";
-import { IConstructable, IDocument } from "./types";
+import { DocumentFields, IConstructable, IDocument } from "./types";
 
 export abstract class FastFire {
 
@@ -8,6 +8,15 @@ export abstract class FastFire {
 
   static initialize(firestore: firebase.firestore.Firestore) {
     this.firestore = firestore
+  }
+
+  static async create<T extends IDocument>(
+    documentClass: IConstructable<T>,
+    fields: DocumentFields<T>
+  ): Promise<T> {
+    const docRef = await this.firestore.collection(documentClass.name).add(fields)
+    const doc = await docRef.get()
+    return this.fromSnapshot(documentClass, doc) as T
   }
 
   static async findById<T extends IDocument>(
