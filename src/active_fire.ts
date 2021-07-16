@@ -1,33 +1,38 @@
 import firebase from "firebase";
+import { WhereChain } from "./where_chain";
+import { IConstructable, IDocument } from "./types";
 
-export class ActiveFire {
+export abstract class ActiveFire {
 
-  protected static firestore: firebase.firestore.Firestore
+  static firestore: firebase.firestore.Firestore
 
   static initialize(firestore: firebase.firestore.Firestore) {
     this.firestore = firestore
   }
 
-  static get collection(): firebase.firestore.CollectionReference {
-    return this.firestore.collection(this.name)
+  static async findById<T extends IDocument>(
+    documentClass: IConstructable<T>,
+    id: string
+  ): Promise<T | null> {
+    const doc = await this.firestore.collection(documentClass.name).doc(id).get()
+    return this.fromSnapshot(documentClass, doc)
   }
 
-  static async findById<T>(id: string): Promise<T | null> {
-    const doc = await this.collection.doc(id).get()
-    return this.fromSnapshot(doc)
+  static where<T extends IDocument>(
+    documentClass: IConstructable<T>,
+    fieldPath: string | firebase.firestore.FieldPath,
+    opStr: firebase.firestore.WhereFilterOp,
+    value: any
+  ): WhereChain<T> {
+    const query = this.firestore.collection(documentClass.name).where(fieldPath, opStr, value)
+    return new WhereChain(documentClass, query)
   }
 
-  static async where<T>(): Promise<T[]> {
-    const snapshots = await this.collection.where("name", "==", "tockn").get()
-    const docs: T[] = []
-    snapshots.forEach((snapshot) => {
-      docs.push(this.fromSnapshot(snapshot) as T)
-    })
-    return docs
-  }
-
-  private static fromSnapshot<T>(snapshot: firebase.firestore.DocumentSnapshot): T | null {
-    const obj = new this(snapshot.id) as unknown as T
+  static fromSnapshot<T extends IDocument>(
+    documentClass: IConstructable<T>,
+    snapshot: firebase.firestore.DocumentSnapshot
+  ): T | null {
+    const obj = new documentClass(snapshot.id) as unknown as T
     if (!snapshot.exists) return null
 
     const data = snapshot.data() as never
@@ -36,29 +41,5 @@ export class ActiveFire {
       obj[key as never] = data[key] as never
     }
     return obj
-  }
-
-  // id is a firestore document id
-  public id: string
-
-  constructor(id: string) {
-    this.id = id
-  }
-
-  get document(): firebase.firestore.DocumentReference {
-    return ActiveFire.firestore.collection(this.constructor.name).doc(this.id)
-  }
-
-  async update(data: firebase.firestore.DocumentData) {
-    await this.document.update(data)
-  }
-}
-
-
-export class ArrayActiveFire {
-  documents: ActiveFire[]
-
-  constructor(documents: ActiveFire[]) {
-    this.documents = documents
   }
 }
