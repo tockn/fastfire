@@ -17,7 +17,7 @@ class User extends FastFireDocument {
 }
 
 // Create a new Firestore document
-const user1 = await FastFire.create(Hoge, {
+const user1 = await FastFire.create(User, {
   name: "tockn", // type safe!🔥
   bio: "hello world!"
 })
@@ -29,7 +29,7 @@ await user1.update({
 
 // Search Firestore documents
 const users = FastFire.where(
-  Hoge, 
+  User, 
   "name", // type safe🔥
   "==", 
   "tockn"
