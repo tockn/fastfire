@@ -29,11 +29,11 @@ export abstract class FastFire {
 
   static where<T extends IDocument>(
     documentClass: IConstructable<T>,
-    fieldPath: string | firebase.firestore.FieldPath,
+    fieldPath: keyof T | firebase.firestore.FieldPath,
     opStr: firebase.firestore.WhereFilterOp,
     value: any
   ): WhereChain<T> {
-    const query = this.firestore.collection(documentClass.name).where(fieldPath, opStr, value)
+    const query = this.firestore.collection(documentClass.name).where(fieldPath as string, opStr, value)
     return new WhereChain(documentClass, query)
   }
 

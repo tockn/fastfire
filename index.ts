@@ -1,6 +1,6 @@
+import { FastFire, FastFireDocument } from "./src";
+
 import firebase from "firebase";
-import { FastFireDocument } from "./index";
-import { FastFire } from "./index";
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,
@@ -14,7 +14,7 @@ firebase.initializeApp(firebaseConfig);
 
 FastFire.initialize(firebase.firestore())
 
-class Hoge extends FastFireDocument {
+class Hoge extends FastFireDocument<Hoge> {
   name!: string
   description!: string
 }
@@ -28,6 +28,9 @@ const exec = async () => {
   })
 
   const hoge = await FastFire.findById(Hoge,"hoge")
+  await hoge?.update({
+    name: "fuga"
+  })
   console.log(hoge?.description)
 
   await FastFire.where(Hoge, "name", "==", "tockn").forEach((d) => {

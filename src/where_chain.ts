@@ -25,11 +25,11 @@ export class WhereChain<T> {
   }
 
   where(
-    fieldPath: string | firebase.firestore.FieldPath,
+    fieldPath: keyof T | firebase.firestore.FieldPath,
     opStr: firebase.firestore.WhereFilterOp,
     value: any
   ): WhereChain<T> {
-    return new WhereChain<T>(this.documentClass, this.collectionRef.where(fieldPath, opStr, value))
+    return new WhereChain<T>(this.documentClass, this.collectionRef.where(fieldPath as string, opStr, value))
   }
 
   private fromSnapshot(snapshot: firebase.firestore.DocumentSnapshot): T | null {

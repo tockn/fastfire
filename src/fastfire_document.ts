@@ -1,7 +1,8 @@
 import firebase from "firebase";
 import { FastFire } from "./fastfire";
+import { DocumentFields } from "./types";
 
-export class FastFireDocument {
+export class FastFireDocument<T> {
 
   static get collection(): firebase.firestore.CollectionReference {
     return FastFire.firestore.collection(this.name)
@@ -18,7 +19,7 @@ export class FastFireDocument {
     return FastFire.firestore.collection(this.constructor.name).doc(this.id)
   }
 
-  async update(data: firebase.firestore.DocumentData) {
-    await this.reference.update(data)
+  async update(fields: DocumentFields<T>) {
+    await this.reference.update(fields)
   }
 }
