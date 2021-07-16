@@ -32,7 +32,20 @@
     "trailingComma": "es5"
   },
   "name": "active-fire",
-  "author": "tockn",
+  "author": {
+    "name": "tockn",
+    "email": "tockn.jp@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tockn/active-fire"
+  },
+  "keywords": [
+    "firebase",
+    "firestore",
+    "activerecord",
+    "orm"
+  ],
   "module": "dist/active-fire.esm.js",
   "size-limit": [
     {
