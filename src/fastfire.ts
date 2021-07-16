@@ -2,7 +2,7 @@ import firebase from "firebase";
 import { WhereChain } from "./where_chain";
 import { IConstructable, IDocument } from "./types";
 
-export abstract class ActiveFire {
+export abstract class FastFire {
 
   static firestore: firebase.firestore.Firestore
 

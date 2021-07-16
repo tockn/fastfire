@@ -31,14 +31,14 @@
     "singleQuote": true,
     "trailingComma": "es5"
   },
-  "name": "active-fire",
+  "name": "fastfire",
   "author": {
     "name": "tockn",
     "email": "tockn.jp@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tockn/active-fire"
+    "url": "https://github.com/tockn/fastfire"
   },
   "keywords": [
     "firebase",

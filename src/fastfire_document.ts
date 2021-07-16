@@ -1,10 +1,10 @@
 import firebase from "firebase";
-import { ActiveFire } from "./active_fire";
+import { FastFire } from "./fastfire";
 
-export class ActiveFireDocument {
+export class FastFireDocument {
 
   static get collection(): firebase.firestore.CollectionReference {
-    return ActiveFire.firestore.collection(this.name)
+    return FastFire.firestore.collection(this.name)
   }
 
   // id is a firestore document id
@@ -15,7 +15,7 @@ export class ActiveFireDocument {
   }
 
   get reference(): firebase.firestore.DocumentReference {
-    return ActiveFire.firestore.collection(this.constructor.name).doc(this.id)
+    return FastFire.firestore.collection(this.constructor.name).doc(this.id)
   }
 
   async update(data: firebase.firestore.DocumentData) {

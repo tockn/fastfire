@@ -1,6 +1,6 @@
 import firebase from "firebase";
-import { ActiveFireDocument } from "./src/active_fire_document";
-import { ActiveFire } from "./src/active_fire";
+import { FastFireDocument } from "./src";
+import { FastFire } from "./src";
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,
@@ -12,9 +12,9 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
-ActiveFire.initialize(firebase.firestore())
+FastFire.initialize(firebase.firestore())
 
-class Hoge extends ActiveFireDocument {
+class Hoge extends FastFireDocument {
   name!: string
   description!: string
 }
@@ -22,10 +22,10 @@ class Hoge extends ActiveFireDocument {
 console.log("hello")
 const exec = async () => {
 
-  const hoge = await ActiveFire.findById(Hoge,"hoge")
+  const hoge = await FastFire.findById(Hoge,"hoge")
   console.log(hoge?.description)
 
-  await ActiveFire.where(Hoge, "name", "==", "tockn").forEach((d) => {
+  await FastFire.where(Hoge, "name", "==", "tockn").forEach((d) => {
     console.log(d)
   })
 

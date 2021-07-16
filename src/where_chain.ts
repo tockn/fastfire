@@ -1,5 +1,5 @@
 import firebase from "firebase";
-import { ActiveFire } from "./active_fire";
+import { FastFire } from "./fastfire";
 import { IConstructable } from "./types";
 
 export class WhereChain<T> {
@@ -12,7 +12,7 @@ export class WhereChain<T> {
   }
 
   get collectionRef(): firebase.firestore.CollectionReference {
-    return ActiveFire.firestore.collection(this.documentClass.name)
+    return FastFire.firestore.collection(this.documentClass.name)
   }
 
   async forEach(callback: (result: T) => void) {
