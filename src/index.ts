@@ -8,7 +8,7 @@ export * from './types'
 
 import firebase from "firebase";
 import { FastFireDocument } from "./fastfire_document";
-import { FastFireReference } from "./fastfire_reference";
+import { FastFireReference, reference } from "./fastfire_reference";
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,
@@ -27,9 +27,12 @@ class User extends FastFireDocument<User> {
   bio!: string
 }
 
+// @ts-ignore
 class Article extends FastFireDocument<Article> {
   title!: string
   body!: string
+
+  @reference(User)
   author!: FastFireReference<User>
 }
 
@@ -50,8 +53,9 @@ const exec = async () => {
 
   const article = await FastFire.findById(Article, "ZcbQ6gnMFIHGAFtafvLy")
   if (!article) return
-  const author = await article.author.find()
-  console.log(author?.name)
+  // const author = await article.author.find()
+  await article.preload(["author"])
+  console.log(article)
 }
 
 exec().catch((e) => console.error(e))

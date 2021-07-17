@@ -1,12 +1,12 @@
 import firebase from "firebase";
 import { FastFire } from "./fastfire";
-import { IConstructable } from "./types";
+import { IDocumentClass } from "./types";
 
 export class WhereChain<T> {
-  documentClass: IConstructable<T>
+  documentClass: IDocumentClass<T>
   query: firebase.firestore.Query
 
-  constructor(documentClass: IConstructable<T>, query: firebase.firestore.Query) {
+  constructor(documentClass: IDocumentClass<T>, query: firebase.firestore.Query) {
     this.documentClass = documentClass
     this.query = query
   }
