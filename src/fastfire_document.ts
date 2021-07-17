@@ -1,7 +1,6 @@
 import firebase from "firebase";
 import { FastFire } from "./fastfire";
 import { DocumentFields, ReferenceClassMap } from "./types";
-import { preload } from "./preload";
 
 export class FastFireDocument<T> {
 
@@ -29,10 +28,6 @@ export class FastFireDocument<T> {
 
   async update(fields: DocumentFields<T>) {
     await this.reference.update(fields)
-  }
-
-  async preload(referenceFields: (keyof T)[]) {
-    await preload<T>(this, referenceFields)
   }
 }
 
