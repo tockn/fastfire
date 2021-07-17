@@ -1,9 +1,5 @@
 import firebase from "firebase";
 
-export interface IDocument {
-  id: string
-}
-
 export interface IDocumentClass<T> {
   new(...args: any) : T
   name: string

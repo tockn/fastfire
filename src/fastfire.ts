@@ -1,6 +1,6 @@
 import firebase from "firebase";
 import { QueryChain } from "./where_chain";
-import { DocumentFields, IDocumentClass, IDocument } from "./types";
+import { DocumentFields, IDocumentClass } from "./types";
 import { FastFireDocument } from "./fastfire_document";
 
 export abstract class FastFire {
@@ -11,7 +11,7 @@ export abstract class FastFire {
     this.firestore = firestore
   }
 
-  static async create<T extends IDocument>(
+  static async create<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
@@ -27,7 +27,7 @@ export abstract class FastFire {
     return this.fromSnapshot(documentClass, doc) as T
   }
 
-  static async findById<T extends IDocument>(
+  static async findById<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     id: string
   ): Promise<T | null> {
@@ -35,7 +35,7 @@ export abstract class FastFire {
     return this.fromSnapshot<T>(documentClass, doc)
   }
 
-  static where<T extends IDocument>(
+  static where<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     fieldPath: keyof T | firebase.firestore.FieldPath,
     opStr: firebase.firestore.WhereFilterOp,
@@ -45,7 +45,7 @@ export abstract class FastFire {
     return new QueryChain(documentClass, query)
   }
 
-  static async all<T extends IDocument>(
+  static async all<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
   ): Promise<T[]> {
     const snapshots = await this.firestore.collection(documentClass.name).get()
@@ -58,14 +58,14 @@ export abstract class FastFire {
     return results
   }
 
-  static preload<T extends IDocument>(
+  static preload<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     referenceFields: (keyof T)[]
   ): QueryChain<T> {
     return new QueryChain<T>(documentClass, undefined, referenceFields)
   }
 
-  static fromSnapshot<T extends IDocument>(
+  static fromSnapshot<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     snapshot: firebase.firestore.DocumentSnapshot
   ): T | null {

@@ -1,8 +1,7 @@
 import { FastFireDocument } from "./fastfire_document";
 import { FastFire } from "./fastfire";
-import { IDocument } from "./types";
 
-export const preload = async <T extends IDocument>(document: T, referenceFields: (keyof T)[]) => {
+export const preload = async <T extends FastFireDocument<T>>(document: T, referenceFields: (keyof T)[]) => {
   const promises: Promise<void>[] = []
   for (const field of referenceFields) {
     const promise = new Promise<void>((resolve) => {

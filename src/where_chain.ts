@@ -1,9 +1,10 @@
 import firebase from "firebase";
 import { FastFire } from "./fastfire";
-import { IDocument, IDocumentClass } from "./types";
+import { IDocumentClass } from "./types";
 import { preload } from "./preload";
+import { FastFireDocument } from "./fastfire_document";
 
-export class QueryChain<T extends IDocument> {
+export class QueryChain<T extends FastFireDocument<T>> {
   documentClass: IDocumentClass<T>
   query?: firebase.firestore.Query
 
