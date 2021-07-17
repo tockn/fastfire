@@ -15,10 +15,6 @@ export abstract class FastFire {
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
-    // for (const key of (Object.keys(fields) as (keyof DocumentFields<T>)[])) {
-    //   if (!(fields[key] as any instanceof firebase.firestore.DocumentReference)) continue
-    //   fields[key] = (fields[key]
-    // }
     const docRef = await this.firestore.collection(documentClass.name).add(fields)
     const doc = await docRef.get()
     return this.fromSnapshot(documentClass, doc) as T
