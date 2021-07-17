@@ -1,7 +1,7 @@
 import firebase from "firebase";
 import { QueryChain } from "./where_chain";
 import { DocumentFields, IDocumentClass, IDocument } from "./types";
-import { FastFireReference } from "./fastfire_reference";
+import { FastFireDocument } from "./fastfire_document";
 
 export abstract class FastFire {
 
@@ -15,7 +15,14 @@ export abstract class FastFire {
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
-    const docRef = await this.firestore.collection(documentClass.name).add(fields)
+    const data = Object.assign({}, fields)
+    for (const key of Object.keys(data) as (keyof typeof data)[]) {
+      if (!documentClass.referenceClassMap[key as never]) continue
+      if (data[key] instanceof FastFireDocument) {
+        data[key] = (data[key] as any).reference
+      }
+    }
+    const docRef = await this.firestore.collection(documentClass.name).add(data)
     const doc = await docRef.get()
     return this.fromSnapshot(documentClass, doc) as T
   }
@@ -68,13 +75,8 @@ export abstract class FastFire {
     const data = snapshot.data() as never
     const keys = Object.keys(data) as never[]
     for (const key of keys) {
-      if (data[key] as any instanceof firebase.firestore.DocumentReference) {
-        if (!documentClass.referenceClassMap[key]) {
-          throw new Error(`${documentClass.name} does not have reference mapping class of ${key}.
-Maybe you forget to set @Reference decorator to ${key} in ${documentClass.name} class definition.`)
-        }
-
-        obj[key] = new FastFireReference(documentClass.referenceClassMap[key], data[key]) as never
+      if (documentClass.referenceClassMap[key]) {
+        obj[key] = new documentClass.referenceClassMap[key]((data[key] as firebase.firestore.DocumentReference).id) as never
       } else {
         obj[key] = data[key] as never
       }

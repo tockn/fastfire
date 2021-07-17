@@ -8,7 +8,7 @@ export * from './types'
 
 import firebase from "firebase";
 import { FastFireDocument } from "./fastfire_document";
-import { FastFireReference, Reference } from "./fastfire_reference";
+import { FastFireReference } from "./fastfire_reference";
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,
@@ -24,7 +24,6 @@ FastFire.initialize(firebase.firestore())
 
 
 
-// === model定義。FastFireDocumentを継承する ===
 class User extends FastFireDocument<User> {
   name!: string
   bio!: string
@@ -35,25 +34,16 @@ class Article extends FastFireDocument<Article> {
   body!: string
 
   // Reference型はDecoratorを付ける
-  @Reference(User)
-  authorRef!: FastFireReference<User>
+  @FastFireReference(User)
+  author!: User
 }
-// ========
 
 const exec = async () => {
-  // IDにより検索
-  const user = await FastFire.findById(User, "4Uar6RBThDiI8DTPQalM")
-  if (!user) return
-
-  // フィールド名と値はtype safe
-  await user.update({ name: "taro" })
-
-  const docs = FastFire.preload(Article, ["authorRef"])
+  const docs = FastFire.preload(Article, ["author"])
     .where("title", "==", "title")
 
-  // preloadで指定したReferenceが非同期で取得され、whereの結果に注入される
   await docs.forEach((doc) => {
-    console.log(doc.authorRef.data.name) // taro
+    console.log(doc.author.name) // taro
   })
 }
 

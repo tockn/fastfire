@@ -1,7 +1,8 @@
-import { FastFireReference } from "./fastfire_reference";
+import { FastFireDocument } from "./fastfire_document";
+import { FastFire } from "./fastfire";
 import { IDocument } from "./types";
 
-export const preload = async <T>(document: IDocument, referenceFields: (keyof T)[]) => {
+export const preload = async <T extends IDocument>(document: T, referenceFields: (keyof T)[]) => {
   const promises: Promise<void>[] = []
   for (const field of referenceFields) {
     const promise = new Promise<void>((resolve) => {
@@ -9,10 +10,14 @@ export const preload = async <T>(document: IDocument, referenceFields: (keyof T)
       if (!descriptor) {
         throw new PreloadError(`${document.constructor.name} does not have property "${field}"`)
       }
-      if (!descriptor.writable || !(descriptor.value instanceof FastFireReference)) {
-        throw new PreloadError(`${document.constructor.name}.${field} is not FastFireReference`)
+      if (!descriptor.writable || !(descriptor.value instanceof FastFireDocument)) {
+        throw new PreloadError(`${document.constructor.name}.${field} is not FastFireDocument`)
       }
-      descriptor.value.load().then(() => resolve())
+      descriptor.value.reference.get().then((doc) => {
+        // @ts-ignore
+        document[field] = FastFire.fromSnapshot(descriptor.value.constructor, doc)
+        resolve()
+      })
     })
     promises.push(promise)
   }
