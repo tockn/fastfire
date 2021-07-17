@@ -1,5 +1,5 @@
 import firebase from "firebase";
-import { WhereChain } from "./where_chain";
+import { QueryChain } from "./where_chain";
 import { DocumentFields, IDocumentClass, IDocument } from "./types";
 import { FastFireReference } from "./fastfire_reference";
 
@@ -33,9 +33,9 @@ export abstract class FastFire {
     fieldPath: keyof T | firebase.firestore.FieldPath,
     opStr: firebase.firestore.WhereFilterOp,
     value: any
-  ): WhereChain<T> {
+  ): QueryChain<T> {
     const query = this.firestore.collection(documentClass.name).where(fieldPath as string, opStr, value)
-    return new WhereChain(documentClass, query)
+    return new QueryChain(documentClass, query)
   }
 
   static async all<T extends IDocument>(

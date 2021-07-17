@@ -2,7 +2,7 @@ import firebase from "firebase";
 import { FastFire } from "./fastfire";
 import { IDocumentClass } from "./types";
 
-export class WhereChain<T> {
+export class QueryChain<T> {
   documentClass: IDocumentClass<T>
   query: firebase.firestore.Query
 
@@ -28,8 +28,8 @@ export class WhereChain<T> {
     fieldPath: keyof T | firebase.firestore.FieldPath,
     opStr: firebase.firestore.WhereFilterOp,
     value: any
-  ): WhereChain<T> {
-    return new WhereChain<T>(this.documentClass, this.collectionRef.where(fieldPath as string, opStr, value))
+  ): QueryChain<T> {
+    return new QueryChain<T>(this.documentClass, this.collectionRef.where(fieldPath as string, opStr, value))
   }
 
   private fromSnapshot(snapshot: firebase.firestore.DocumentSnapshot): T | null {
