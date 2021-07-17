@@ -9,11 +9,18 @@ This is inspired by ActiveRecord.
 ## Example
 
 ```typescript
-import { FastFire } from "./fastfire";
 
 class User extends FastFireDocument {
   name!: string
   bio!: string
+}
+
+class Article extends FastFireDocument<Article> {
+  title!: string
+  body!: string
+
+  @Reference(User)
+  authorRef!: FastFireReference<User>
 }
 
 // Create a new Firestore document
@@ -27,20 +34,14 @@ await user1.update({
   bio: "hi!" // type safe!🔥
 })
 
-// Search Firestore documents
-const users = FastFire.where(
-  User, 
-  "name", // type safe🔥
-  "==", 
-  "tockn"
-).where(
-  "bio", // type safe🔥
-  "==",
-  "hi!"
-)
+// Search Firestore documents with preload reference
+const articles = FastFire
+  .preload(Article, ["authorRef"])
+  .where("bio", "==", "hi!")
 
-await users.forEach((user) => {
-  console.log(user.name)
+// authorRef is also fetched and inject to Article instance asynchronously by preloader
+await articles.forEach((article) => {
+  console.log(article.authorRef.data.name)
 })
 
 // Find a Document by ID
