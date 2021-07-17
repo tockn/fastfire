@@ -51,6 +51,13 @@ export abstract class FastFire {
     return results
   }
 
+  static preload<T extends IDocument>(
+    documentClass: IDocumentClass<T>,
+    referenceFields: (keyof T)[]
+  ): QueryChain<T> {
+    return new QueryChain<T>(documentClass, undefined, referenceFields)
+  }
+
   static fromSnapshot<T extends IDocument>(
     documentClass: IDocumentClass<T>,
     snapshot: firebase.firestore.DocumentSnapshot

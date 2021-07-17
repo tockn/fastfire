@@ -1,7 +1,7 @@
 import firebase from "firebase";
 import { FastFire } from "./fastfire";
 import { DocumentFields, ReferenceClassMap } from "./types";
-import { FastFireReference } from "./fastfire_reference";
+import { preload } from "./preload";
 
 export class FastFireDocument<T> {
 
@@ -32,17 +32,7 @@ export class FastFireDocument<T> {
   }
 
   async preload(referenceFields: (keyof T)[]) {
-    for (const field of referenceFields) {
-      const descriptor = Object.getOwnPropertyDescriptor(this, field)
-      if (!descriptor) {
-        throw new PreloadError(`${this.constructor.name} does not have property "${field}"`)
-      }
-      if (!descriptor.writable || !(descriptor.value instanceof FastFireReference)) {
-        throw new PreloadError(`${this.constructor.name}.${field} is not FastFireReference`)
-      }
-      await descriptor.value.load()
-    }
+    await preload<T>(this, referenceFields)
   }
 }
 
-class PreloadError extends Error {}

@@ -22,48 +22,39 @@ firebase.initializeApp(firebaseConfig);
 
 FastFire.initialize(firebase.firestore())
 
+
+
+// === model定義。FastFireDocumentを継承する ===
 class User extends FastFireDocument<User> {
   name!: string
   bio!: string
 }
 
-// @ts-ignore
 class Article extends FastFireDocument<Article> {
   title!: string
   body!: string
 
+  // Reference型はDecoratorを付ける
   @Reference(User)
   authorRef!: FastFireReference<User>
 }
+// ========
 
-console.log("hello")
 const exec = async () => {
+  // IDにより検索
   const user = await FastFire.findById(User, "4Uar6RBThDiI8DTPQalM")
-  if (!user) {
-    console.log("empty")
-    return
-  }
+  if (!user) return
 
-  const article = await FastFire.create(Article, {
-    title: "titile",
-    body: "body",
-    authorRef: user.reference
+  // フィールド名と値はtype safe
+  await user.update({ name: "taro" })
+
+  const docs = FastFire.preload(Article, ["authorRef"])
+    .where("title", "==", "title")
+
+  // preloadで指定したReferenceが非同期で取得され、whereの結果に注入される
+  await docs.forEach((doc) => {
+    console.log(doc.authorRef.data.name) // taro
   })
-  console.log(article)
-
-  // const article = await FastFire.findById(Article, "ZcbQ6gnMFIHGAFtafvLy")
-  // if (!article) return
-  // const author = await article.author.find()
-
-  /*
-  article.author.name // thor Error
-
-  await article.author.load()
-  article.author.name // OK
-   */
-
-  await article.preload(["authorRef"])
-  console.log(article.authorRef.data.name)
 }
 
 exec().catch((e) => console.error(e))
