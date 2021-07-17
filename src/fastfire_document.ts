@@ -1,6 +1,7 @@
 import firebase from "firebase";
 import { FastFire } from "./fastfire";
 import { DocumentFields, ReferenceClassMap } from "./types";
+import { FastFireReference } from "./fastfire_reference";
 
 export class FastFireDocument<T> {
 
@@ -18,6 +19,7 @@ export class FastFireDocument<T> {
   }
 
   static get referenceClassMap(): ReferenceClassMap {
+    if (!FastFireDocument.referenceClassMaps[this.name]) FastFireDocument.referenceClassMaps[this.name] = {}
     return FastFireDocument.referenceClassMaps[this.name]
   }
 
@@ -29,21 +31,18 @@ export class FastFireDocument<T> {
     await this.reference.update(fields)
   }
 
-  // async preload(referenceFields: Extract<keyof T, keyof FastFireReference<any>>[]) {
-  //   for (const field of referenceFields) {
-  //     const descriptor = Object.getOwnPropertyDescriptor(this, field)
-  //     if (!descriptor || !descriptor.writable) continue
-  //     // @ts-ignore
-  //     this[field] = "hoge"
-  //   }
-  // }
-
   async preload(referenceFields: (keyof T)[]) {
     for (const field of referenceFields) {
       const descriptor = Object.getOwnPropertyDescriptor(this, field)
-      if (!descriptor || !descriptor.writable) continue
-      // @ts-ignore
-      this[field] = "hoge"
+      if (!descriptor) {
+        throw new PreloadError(`${this.constructor.name} does not have property "${field}"`)
+      }
+      if (!descriptor.writable || !(descriptor.value instanceof FastFireReference)) {
+        throw new PreloadError(`${this.constructor.name}.${field} is not FastFireReference`)
+      }
+      await descriptor.value.load()
     }
   }
 }
+
+class PreloadError extends Error {}

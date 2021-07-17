@@ -1,7 +1,6 @@
 import firebase from "firebase";
 import { WhereChain } from "./where_chain";
 import { DocumentFields, IDocumentClass, IDocument } from "./types";
-import { FastFireDocument } from "./fastfire_document";
 import { FastFireReference } from "./fastfire_reference";
 
 export abstract class FastFire {
@@ -16,10 +15,10 @@ export abstract class FastFire {
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
-    for (const key of (Object.keys(fields) as (keyof DocumentFields<T>)[])) {
-      if (!(fields[key] as any instanceof FastFireDocument)) continue
-      fields[key] = (fields[key] as unknown as FastFireDocument<T>).reference
-    }
+    // for (const key of (Object.keys(fields) as (keyof DocumentFields<T>)[])) {
+    //   if (!(fields[key] as any instanceof firebase.firestore.DocumentReference)) continue
+    //   fields[key] = (fields[key]
+    // }
     const docRef = await this.firestore.collection(documentClass.name).add(fields)
     const doc = await docRef.get()
     return this.fromSnapshot(documentClass, doc) as T
@@ -56,35 +55,22 @@ export abstract class FastFire {
     return results
   }
 
-  // static fromSnapshot<T extends IDocument>(
-  //   snapshot: firebase.firestore.DocumentSnapshot
-  // ): T | null {
-  //   if (!snapshot.exists) return null
-  //   const obj = { id: snapshot.id } as T
-  //
-  //   const data = snapshot.data() as never
-  //   const keys = Object.keys(data) as never[]
-  //   for (const key of keys) {
-  //     if (data[key] as any instanceof firebase.firestore.DocumentReference) {
-  //       obj[key] = new FastFireReference(data[key]) as never
-  //     } else {
-  //       obj[key] = data[key] as never
-  //     }
-  //   }
-  //   return obj
-  // }
-
   static fromSnapshot<T extends IDocument>(
     documentClass: IDocumentClass<T>,
     snapshot: firebase.firestore.DocumentSnapshot
   ): T | null {
     if (!snapshot.exists) return null
-    const obj = new documentClass()
+    const obj = new documentClass(snapshot.id)
 
     const data = snapshot.data() as never
     const keys = Object.keys(data) as never[]
     for (const key of keys) {
       if (data[key] as any instanceof firebase.firestore.DocumentReference) {
+        if (!documentClass.referenceClassMap[key]) {
+          throw new Error(`${documentClass.name} does not have reference mapping class of ${key}.
+Maybe you forget to set @Reference decorator to ${key} in ${documentClass.name} class definition.`)
+        }
+
         obj[key] = new FastFireReference(documentClass.referenceClassMap[key], data[key]) as never
       } else {
         obj[key] = data[key] as never
@@ -93,5 +79,3 @@ export abstract class FastFire {
     return obj
   }
 }
-
-// this.nameでset, get作っていい感じにできないか考える

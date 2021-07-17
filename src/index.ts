@@ -8,7 +8,7 @@ export * from './types'
 
 import firebase from "firebase";
 import { FastFireDocument } from "./fastfire_document";
-import { FastFireReference, reference } from "./fastfire_reference";
+import { FastFireReference, Reference } from "./fastfire_reference";
 
 const firebaseConfig = {
   apiKey: process.env.apiKey,
@@ -32,30 +32,38 @@ class Article extends FastFireDocument<Article> {
   title!: string
   body!: string
 
-  @reference(User)
-  author!: FastFireReference<User>
+  @Reference(User)
+  authorRef!: FastFireReference<User>
 }
 
 console.log("hello")
 const exec = async () => {
-  // const user = await FastFire.findById(User, "4Uar6RBThDiI8DTPQalM")
-  // if (!user) {
-  //   console.log("empty")
-  //   return
-  // }
-  //
-  // const article = await FastFire.create(Article, {
-  //   title: "titile",
-  //   body: "body",
-  //   author: user
-  // })
-  // console.log(article)
+  const user = await FastFire.findById(User, "4Uar6RBThDiI8DTPQalM")
+  if (!user) {
+    console.log("empty")
+    return
+  }
 
-  const article = await FastFire.findById(Article, "ZcbQ6gnMFIHGAFtafvLy")
-  if (!article) return
-  // const author = await article.author.find()
-  await article.preload(["author"])
+  const article = await FastFire.create(Article, {
+    title: "titile",
+    body: "body",
+    authorRef: user.reference
+  })
   console.log(article)
+
+  // const article = await FastFire.findById(Article, "ZcbQ6gnMFIHGAFtafvLy")
+  // if (!article) return
+  // const author = await article.author.find()
+
+  /*
+  article.author.name // thor Error
+
+  await article.author.load()
+  article.author.name // OK
+   */
+
+  await article.preload(["authorRef"])
+  console.log(article.authorRef.data.name)
 }
 
 exec().catch((e) => console.error(e))
