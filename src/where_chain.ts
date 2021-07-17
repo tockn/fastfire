@@ -1,34 +1,34 @@
-import firebase from "firebase";
-import { FastFire } from "./fastfire";
-import { IDocumentClass } from "./types";
-import { preload } from "./preload";
-import { FastFireDocument } from "./fastfire_document";
+import firebase from 'firebase';
+import { FastFire } from './fastfire';
+import { IDocumentClass } from './types';
+import { preload } from './preload';
+import { FastFireDocument } from './fastfire_document';
 
 export class QueryChain<T extends FastFireDocument<T>> {
-  documentClass: IDocumentClass<T>
-  query?: firebase.firestore.Query
+  documentClass: IDocumentClass<T>;
+  query?: firebase.firestore.Query;
 
-  private preloadReferenceFields: (keyof T)[]
+  private preloadReferenceFields: (keyof T)[];
 
   constructor(
     documentClass: IDocumentClass<T>,
     query?: firebase.firestore.Query,
     preloadReferenceFields: (keyof T)[] = []
   ) {
-    this.documentClass = documentClass
-    this.query = query
-    this.preloadReferenceFields = preloadReferenceFields
+    this.documentClass = documentClass;
+    this.query = query;
+    this.preloadReferenceFields = preloadReferenceFields;
   }
 
   get collectionRef(): firebase.firestore.CollectionReference {
-    return FastFire.firestore.collection(this.documentClass.name)
+    return FastFire.firestore.collection(this.documentClass.name);
   }
 
   async forEach(callback: (result: T) => void) {
-    const docs = await this.execQuery()
-    docs.forEach((doc) => {
-      callback(doc)
-    })
+    const docs = await this.execQuery();
+    docs.forEach(doc => {
+      callback(doc);
+    });
   }
 
   where(
@@ -40,31 +40,33 @@ export class QueryChain<T extends FastFireDocument<T>> {
       this.documentClass,
       this.collectionRef.where(fieldPath as string, opStr, value),
       this.preloadReferenceFields
-    )
+    );
   }
 
   private async execQuery(): Promise<T[]> {
     let snapshots;
     if (this.query) {
-      snapshots = await this.query.get()
+      snapshots = await this.query.get();
     } else {
-      snapshots = await FastFire.firestore.collection(this.documentClass.name).get()
+      snapshots = await FastFire.firestore
+        .collection(this.documentClass.name)
+        .get();
     }
-    const docs: T[] = []
+    const docs: T[] = [];
 
-    const promises: Promise<void>[] = []
-    snapshots.forEach((snapshot) => {
-      const promise = new Promise<void>((resolve) => {
-        const doc = FastFire.fromSnapshot<T>(this.documentClass, snapshot)
-        if (!doc) return
+    const promises: Promise<void>[] = [];
+    snapshots.forEach(snapshot => {
+      const promise = new Promise<void>(resolve => {
+        const doc = FastFire.fromSnapshot<T>(this.documentClass, snapshot);
+        if (!doc) return;
         preload<T>(doc, this.preloadReferenceFields).then(() => {
-          docs.push(doc)
-          resolve()
-        })
-      })
-      promises.push(promise)
-    })
-    await Promise.all(promises)
-    return docs
+          docs.push(doc);
+          resolve();
+        });
+      });
+      promises.push(promise);
+    });
+    await Promise.all(promises);
+    return docs;
   }
 }
