@@ -19,8 +19,8 @@ class Article extends FastFireDocument<Article> {
   title!: string
   body!: string
 
-  @Reference(User)
-  authorRef!: FastFireReference<User>
+  @FastFireReference(User)
+  author!: User
 }
 
 // Create a new Firestore document
@@ -36,12 +36,12 @@ await user1.update({
 
 // Search Firestore documents with preload reference
 const articles = FastFire
-  .preload(Article, ["authorRef"])
+  .preload(Article, ["author"])
   .where("bio", "==", "hi!")
 
 // authorRef is also fetched and inject to Article instance asynchronously by preloader
 await articles.forEach((article) => {
-  console.log(article.authorRef.data.name)
+  console.log(article.author.name)
 })
 
 // Find a Document by ID
