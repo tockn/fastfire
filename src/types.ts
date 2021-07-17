@@ -1,3 +1,4 @@
+import firebase from "firebase";
 
 export interface IDocument {
   id: string
@@ -8,4 +9,4 @@ export interface IConstructable<T> {
   name: string
 }
 
-export type DocumentFields<T> = { [key in keyof T]?: any }
+export type DocumentFields<T> = { [key in keyof T]?: T[keyof T] | firebase.firestore.DocumentReference }

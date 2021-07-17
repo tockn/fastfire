@@ -19,7 +19,7 @@ class User extends FastFireDocument {
 // Create a new Firestore document
 const user1 = await FastFire.create(User, {
   name: "tockn", // type safe!🔥
-  bio: "hello world!"
+  bio: "hello world!" // type safe!🔥
 })
 
 // Update a Firestore document
