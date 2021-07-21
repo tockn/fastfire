@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import { QueryChain } from './where_chain';
+import { QueryChain } from './query_chain';
 import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';
 import { unique } from './utils';

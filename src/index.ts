@@ -6,7 +6,7 @@ import { FastFireReference } from './fastfire_reference';
 
 export * from './fastfire';
 export * from './fastfire_document';
-export * from './where_chain';
+export * from './query_chain';
 
 export * from './types';
 
