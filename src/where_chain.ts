@@ -3,12 +3,13 @@ import { FastFire } from './fastfire';
 import { IDocumentClass } from './types';
 import { preload } from './preload';
 import { FastFireDocument } from './fastfire_document';
+import { unique } from './utils';
 
 export class QueryChain<T extends FastFireDocument<T>> {
   documentClass: IDocumentClass<T>;
   query?: firebase.firestore.Query;
 
-  private preloadReferenceFields: (keyof T)[];
+  private readonly preloadReferenceFields: (keyof T)[];
 
   constructor(
     documentClass: IDocumentClass<T>,
@@ -40,6 +41,14 @@ export class QueryChain<T extends FastFireDocument<T>> {
       this.documentClass,
       this.collectionRef.where(fieldPath as string, opStr, value),
       this.preloadReferenceFields
+    );
+  }
+
+  preload(referenceFields: (keyof T)[]): QueryChain<T> {
+    return new QueryChain<T>(
+      this.documentClass,
+      this.query,
+      unique(this.preloadReferenceFields.concat(referenceFields))
     );
   }
 

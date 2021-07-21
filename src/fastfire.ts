@@ -2,6 +2,7 @@ import firebase from 'firebase';
 import { QueryChain } from './where_chain';
 import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';
+import { unique } from './utils';
 
 export abstract class FastFire {
   static firestore: firebase.firestore.Firestore;
@@ -68,7 +69,7 @@ export abstract class FastFire {
     documentClass: IDocumentClass<T>,
     referenceFields: (keyof T)[]
   ): QueryChain<T> {
-    return new QueryChain<T>(documentClass, undefined, referenceFields);
+    return new QueryChain<T>(documentClass, undefined, unique(referenceFields));
   }
 
   static fromSnapshot<T extends FastFireDocument<T>>(

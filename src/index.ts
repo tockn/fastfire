@@ -37,11 +37,9 @@ class Article extends FastFireDocument<Article> {
 }
 
 const exec = async () => {
-  const docs = FastFire.preload(Article, ['author']).where(
-    'title',
-    '==',
-    'title'
-  );
+  const docs = FastFire.preload(Article, ['author'])
+    .where('title', '==', 'title')
+    .preload(['author']);
 
   await docs.forEach(doc => {
     console.log(doc.author.name); // taro
