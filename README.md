@@ -1,16 +1,55 @@
-# FastFire🔥
+<div align="center">
+  <h1>FastFire🔥</h1>
 
-FastFire is a library for working with Firestore quickly and easily.
-
-This is inspired by ActiveRecord.
+```
+$ npm install --save fastfire
+or
+$ yarn add fastfire
+```
+</div>
 
 ⚠WIP⚠
 
-## Example
+## What is FastFire?
+
+FastFire is the Firestore ORM library for quick and easy development written in TypeScript.
+
+Just define a FastFireDocument class and FastFire will take care of all the hassle of implementing things like storing and retrieving data, mapping to instances, and more.
+
+It also enables more rapid development by implementing business logic within the FastFireDocument class. Yes, this is the Active Record pattern.
+
+FastFire is strongly inspired by ActiveRecord.
+
+(Of course, this is type safe in various situations)
+
+## Getting started
+
+### Setup FastFire
+
+Setup Firebase config and call `FastFire.initialize` method with firestore instance.
 
 ```typescript
+import firebase from 'firebase';
 
-class User extends FastFireDocument {
+const firebaseConfig = {
+  apiKey: process.env.apiKey,
+  authDomain: process.env.authDomain,
+  projectId: process.env.projectId,
+  storageBucket: process.env.storageBucket,
+  messagingSenderId: process.env.messagingSenderId,
+  appId: process.env.appId,
+};
+firebase.initializeApp(firebaseConfig);
+
+FastFire.initialize(firebase.firestore());
+```
+
+### Define FastFireDocument
+
+Define a class to treat as a Firebase document and extends `FastFireDocument` in that class.
+
+```typescript
+class User extends FastFireDocument<User> {
   name!: string
   bio!: string
 }
@@ -22,29 +61,88 @@ class Article extends FastFireDocument<Article> {
   @FastFireReference(User)
   author!: User
 }
+```
 
-// Create a new Firestore document
-const user1 = await FastFire.create(User, {
+### Create a Document
+
+```typescript
+const user = await FastFire.create(User, {
   name: "tockn", // type safe!🔥
   bio: "hello world!" // type safe!🔥
 })
+```
 
-// Update a Firestore document
-await user1.update({
-  bio: "hi!" // type safe!🔥
+### Fetch Document
+
+- By document id
+
+```typescript
+const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+```
+
+- Using query
+
+```typescript
+const users = await FastFire.where(User, "name", "==", "tockn")
+                      .where("bio", "==", "hello world!")
+                      .limit(1)
+                      .get()
+```
+
+### Update or Delete Document
+
+```typescript
+const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+
+await user.update({ name: "Ohtani-San" })
+
+await user.delete()
+```
+
+### Reference Type and Preloading
+
+Create a document with Reference Type field.
+
+```typescript
+const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+
+await FastFire.create(Article, {
+  title: "big fly!",
+  body: "suwatte kuda sai",
+  author: user // author is Reference Type field
 })
+```
 
-// Search Firestore documents with preload reference
-const articles = FastFire
-  .preload(Article, ["author"])
-  .where("bio", "==", "hi!")
+Reference Type field can be preloaded asynchronously by using the preload method.
 
-// authorRef is also fetched and inject to Article instance asynchronously by preloader
-await articles.forEach((article) => {
-  console.log(article.author.name)
+```typescript
+// preload author field asynchronously.
+const articles = await FastFire.preload(Article, ["author"]).where("title", "==", "big fly!").get()
+
+articles.forEach((article) => {
+  // Because it is preloaded, you can get the author's name
+  console.log(article.author.name) // => tockn
 })
+```
 
-// Find a Document by ID
-await FastFire.findById(user1.id)
+### Get realtime updates
 
+You can get document updates in realtime.
+
+```typescript
+const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+
+user.onChange((updatedUser) => {
+  console.log(updatedUser)
+})
+```
+
+You can also get changes in query results in real time.
+
+```typescript
+const users = await FastFire.where(User, "name", "==", "tockn").where("bio", "==", "hello world!")
+
+users.onResultChange((updatedUsers) => {
+  console.log(updatedUsers)
+})
 ```
