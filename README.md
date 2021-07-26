@@ -78,7 +78,7 @@ const user = await FastFire.create(User, {
 - By document id
 
 ```typescript
-const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+const user = await FastFire.findById(User, "AKDV23DI97CKUQAM")
 ```
 
 - Using query
@@ -93,7 +93,7 @@ const users = await FastFire.where(User, "name", "==", "tockn")
 ### Update or Delete Document
 
 ```typescript
-const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+const user = await FastFire.findById(User, "AKDV23DI97CKUQAM")
 
 await user.update({ name: "Ohtani-San" })
 
@@ -105,7 +105,7 @@ await user.delete()
 Create a document with Reference Type field.
 
 ```typescript
-const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+const user = await FastFire.findById(User, "AKDV23DI97CKUQAM")
 
 await FastFire.create(Article, {
   title: "big fly!",
@@ -131,7 +131,7 @@ articles.forEach((article) => {
 You can get document updates in realtime.
 
 ```typescript
-const user = FastFire.findById(User, "AKDV23DI97CKUQAM")
+const user = await FastFire.findById(User, "AKDV23DI97CKUQAM")
 
 user.onChange((updatedUser) => {
   console.log(updatedUser)
