@@ -4,16 +4,21 @@ import { IDocumentClass } from './types';
 import { preload } from './preload';
 import { FastFireDocument } from './fastfire_document';
 import { unique } from './utils';
+import FieldPath = firebase.firestore.FieldPath;
+import OrderByDirection = firebase.firestore.OrderByDirection;
+import WhereFilterOp = firebase.firestore.WhereFilterOp;
+import Query = firebase.firestore.Query;
+import CollectionReference = firebase.firestore.CollectionReference;
 
 export class QueryChain<T extends FastFireDocument<T>> {
   documentClass: IDocumentClass<T>;
-  query?: firebase.firestore.Query;
+  query?: Query;
 
   private preloadReferenceFields: (keyof T)[];
 
   constructor(
     documentClass: IDocumentClass<T>,
-    query?: firebase.firestore.Query,
+    query?: Query,
     preloadReferenceFields: (keyof T)[] = []
   ) {
     this.documentClass = documentClass;
@@ -21,7 +26,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
     this.preloadReferenceFields = preloadReferenceFields;
   }
 
-  get collectionRef(): firebase.firestore.CollectionReference {
+  get collectionRef(): CollectionReference {
     return FastFire.firestore.collection(this.documentClass.name);
   }
 
@@ -33,8 +38,8 @@ export class QueryChain<T extends FastFireDocument<T>> {
   }
 
   where(
-    fieldPath: keyof T | firebase.firestore.FieldPath,
-    opStr: firebase.firestore.WhereFilterOp,
+    fieldPath: keyof T | FieldPath,
+    opStr: WhereFilterOp,
     value: any
   ): QueryChain<T> {
     if (this.query) {
@@ -64,6 +69,36 @@ export class QueryChain<T extends FastFireDocument<T>> {
       return null;
     }
     return FastFire.fromSnapshot<T>(this.documentClass, docById);
+  }
+
+  limit(limit: number): QueryChain<T> {
+    if (this.query) {
+      this.query = this.query.limit(limit);
+    } else {
+      this.query = this.collectionRef.limit(limit);
+    }
+    return this;
+  }
+
+  limitToLast(limit: number): QueryChain<T> {
+    if (this.query) {
+      this.query = this.query.limitToLast(limit);
+    } else {
+      this.query = this.collectionRef.limitToLast(limit);
+    }
+    return this;
+  }
+
+  orderBy(
+    fieldPath: string | FieldPath,
+    directionStr?: OrderByDirection
+  ): QueryChain<T> {
+    if (this.query) {
+      this.query = this.query.orderBy(fieldPath, directionStr);
+    } else {
+      this.query = this.collectionRef.orderBy(fieldPath, directionStr);
+    }
+    return this;
   }
 
   onChange(cb: (docs: T[]) => void) {
