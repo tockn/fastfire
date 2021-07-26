@@ -52,6 +52,19 @@ export class QueryChain<T extends FastFireDocument<T>> {
     );
   }
 
+  onChange(cb: (docs: T[]) => void) {
+    if (!this.query) return;
+    this.query.onSnapshot(async () => {
+      const docs = await this.execQuery();
+      cb(
+        docs.map(doc => {
+          doc.restrictUpdate = true;
+          return doc;
+        })
+      );
+    });
+  }
+
   private async execQuery(): Promise<T[]> {
     let snapshots;
     if (this.query) {
