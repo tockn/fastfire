@@ -1,6 +1,6 @@
 import firebase from 'firebase';
 import { FastFire } from './fastfire';
-import { DocumentFields, ReferenceClassMap } from './types';
+import { DocumentFields, IDocumentClass, ReferenceClassMap } from './types';
 
 export class FastFireDocument<T> {
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
@@ -28,5 +28,13 @@ export class FastFireDocument<T> {
 
   async update(fields: DocumentFields<T>) {
     await this.reference.update(fields);
+  }
+
+  onChange(cb: (doc: FastFireDocument<T> | null) => void) {
+    this.reference.onSnapshot(snapshot => {
+      cb(
+        FastFire.fromSnapshot(this.constructor as IDocumentClass<any>, snapshot)
+      );
+    });
   }
 }

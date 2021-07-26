@@ -36,13 +36,25 @@ class Article extends FastFireDocument<Article> {
   author!: User;
 }
 
-const exec = async () => {
-  const docs = FastFire.preload(Article, ['author'])
-    .where('title', '==', 'title')
-    .preload(['author']);
+const sleep = (msec: number) =>
+  new Promise(resolve => setTimeout(resolve, msec));
 
-  await docs.forEach(doc => {
-    console.log(doc.author.name); // taro
+const exec = async () => {
+  // const docs = FastFire.preload(Article, ['author'])
+  //   .where('title', '==', 'title')
+  //   .preload(['author']);
+  //
+  // await docs.forEach(doc => {
+  //   doc.onChange(async doc => {
+  //     console.log('update:', doc);
+  //   });
+  // });
+
+  const doc = await FastFire.findById(Article, 'LmfQE9rAFKx3xNJbOATZ');
+  // const doc = await FastFire.findById(Article, 'N0Oc0PzH4b95t6LlSEV5');
+  doc?.onChange(async doc => {
+    await sleep(1000);
+    console.log(doc);
   });
 };
 
