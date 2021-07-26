@@ -52,6 +52,20 @@ export class QueryChain<T extends FastFireDocument<T>> {
     );
   }
 
+  async findById(id: string): Promise<T | null> {
+    const docById = await this.collectionRef.doc(id).get();
+    if (!docById.exists) return null;
+
+    if (this.query) {
+      const docs = await this.execQuery();
+      for (const doc of docs) {
+        if (doc.id === id) return doc;
+      }
+      return null;
+    }
+    return FastFire.fromSnapshot<T>(this.documentClass, docById);
+  }
+
   onChange(cb: (docs: T[]) => void) {
     if (!this.query) return;
     this.query.onSnapshot(async () => {
