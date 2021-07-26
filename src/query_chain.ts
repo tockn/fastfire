@@ -9,7 +9,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
   documentClass: IDocumentClass<T>;
   query?: firebase.firestore.Query;
 
-  private readonly preloadReferenceFields: (keyof T)[];
+  private preloadReferenceFields: (keyof T)[];
 
   constructor(
     documentClass: IDocumentClass<T>,
@@ -37,19 +37,19 @@ export class QueryChain<T extends FastFireDocument<T>> {
     opStr: firebase.firestore.WhereFilterOp,
     value: any
   ): QueryChain<T> {
-    return new QueryChain<T>(
-      this.documentClass,
-      this.collectionRef.where(fieldPath as string, opStr, value),
-      this.preloadReferenceFields
-    );
+    if (this.query) {
+      this.query = this.query.where(fieldPath as string, opStr, value);
+    } else {
+      this.query = this.collectionRef.where(fieldPath as string, opStr, value);
+    }
+    return this;
   }
 
   preload(referenceFields: (keyof T)[]): QueryChain<T> {
-    return new QueryChain<T>(
-      this.documentClass,
-      this.query,
-      unique(this.preloadReferenceFields.concat(referenceFields))
+    this.preloadReferenceFields = unique(
+      this.preloadReferenceFields.concat(referenceFields)
     );
+    return this;
   }
 
   async findById(id: string): Promise<T | null> {

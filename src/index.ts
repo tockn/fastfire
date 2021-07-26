@@ -37,10 +37,14 @@ class Article extends FastFireDocument<Article> {
 }
 
 const exec = async () => {
-  const doc = await FastFire.preload(Article, ['author'])
-    .where('title', '==', 'title')
-    .findById('LmfQE9rAFKx3xNJbOATZ');
-  console.log(doc);
+  const docs = await FastFire.preload(Article, ['author']).where(
+    'title',
+    '==',
+    'title'
+  );
+  docs.onChange(docs => {
+    console.log('updated!', docs);
+  });
 
   // const doc = await FastFire.findById(Article, 'LmfQE9rAFKx3xNJbOATZ');
   // // const doc = await FastFire.findById(Article, 'N0Oc0PzH4b95t6LlSEV5');
