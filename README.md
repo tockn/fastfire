@@ -1,5 +1,6 @@
 <div align="center">
   <h1>FastFire🔥</h1>
+<a href="https://www.npmjs.com/package/fastfire"><img src="https://img.shields.io/npm/v/fastfire.svg?style=flat" /></a>
 
 ```
 $ npm install --save fastfire
