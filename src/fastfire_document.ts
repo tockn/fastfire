@@ -35,6 +35,10 @@ export class FastFireDocument<T> {
     await this.reference.update(fields);
   }
 
+  async delete() {
+    await this.reference.delete();
+  }
+
   onChange(cb: (doc: FastFireDocument<T> | null) => void) {
     this.reference.onSnapshot(snapshot => {
       const doc = FastFire.fromSnapshot(
