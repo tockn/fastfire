@@ -30,11 +30,8 @@ export class QueryChain<T extends FastFireDocument<T>> {
     return FastFire.firestore.collection(this.documentClass.name);
   }
 
-  async forEach(callback: (result: T) => void) {
-    const docs = await this.execQuery();
-    docs.forEach(doc => {
-      callback(doc);
-    });
+  async get(): Promise<T[]> {
+    return this.execQuery();
   }
 
   where(
@@ -101,7 +98,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
     return this;
   }
 
-  onChange(cb: (docs: T[]) => void) {
+  onResultChange(cb: (docs: T[]) => void) {
     if (!this.query) return;
     this.query.onSnapshot(async () => {
       const docs = await this.execQuery();
