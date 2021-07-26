@@ -11,6 +11,8 @@ export class FastFireDocument<T> {
 
   // id is a firestore document id
   public id: string;
+  // to avoid infinite loop in onChange
+  public restrictUpdate = false;
 
   constructor(id: string) {
     this.id = id;
@@ -27,14 +29,28 @@ export class FastFireDocument<T> {
   }
 
   async update(fields: DocumentFields<T>) {
+    if (this.restrictUpdate) {
+      throw new AvoidInfiniteLoopError();
+    }
     await this.reference.update(fields);
   }
 
   onChange(cb: (doc: FastFireDocument<T> | null) => void) {
     this.reference.onSnapshot(snapshot => {
-      cb(
-        FastFire.fromSnapshot(this.constructor as IDocumentClass<any>, snapshot)
+      const doc = FastFire.fromSnapshot(
+        this.constructor as IDocumentClass<any>,
+        snapshot
       );
+      doc.restrictUpdate = true;
+      cb(doc);
     });
+  }
+}
+
+class AvoidInfiniteLoopError extends Error {
+  constructor() {
+    super(
+      'An infinite loop of update processing may occurred, which could cause a heavy load on the Firestore, so an exception was thrown and the processing was interrupted. If this behavior is normal, set restrictUpdate to false for the document.'
+    );
   }
 }

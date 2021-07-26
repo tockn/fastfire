@@ -52,9 +52,11 @@ const exec = async () => {
 
   const doc = await FastFire.findById(Article, 'LmfQE9rAFKx3xNJbOATZ');
   // const doc = await FastFire.findById(Article, 'N0Oc0PzH4b95t6LlSEV5');
+  let num = 0;
   doc?.onChange(async doc => {
     await sleep(1000);
-    console.log(doc);
+    console.log('update');
+    doc?.update({ body: `${num}` });
   });
 };
 
