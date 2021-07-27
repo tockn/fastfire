@@ -154,3 +154,35 @@ users.onResultChange((updatedUsers) => {
   console.log(updatedUsers)
 })
 ```
+
+### Validation
+
+You can implement validations using the argument of FastFireField decorator.
+
+- Required Field Validation
+
+```typescript
+class User extends FastFireDocument<User> {
+  @FastFireField({ required: true} )
+  name!: string
+  @FastFireField()
+  bio!: string
+}
+
+await FastFire.create(User, { bio: "hello" }) // DocumentValidationError: "User" body: name is required.
+```
+
+- Custom Validation
+
+```typescript
+class User extends FastFireDocument<User> {
+  @FastFireField({ validate: User.validateName })
+  name!: string
+  
+  static validateName(name: string): ValidationResult {
+    if (name.length > 100) return "name is too long!"
+  }
+}
+
+await FastFire.create(User, { bio: "hello" }) // DocumentValidationError: "User" name: name is too long!
+```

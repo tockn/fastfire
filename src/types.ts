@@ -18,5 +18,7 @@ export type FieldOptionsMap = { [fieldName: string]: IFastFireFieldOptions };
 
 export interface IFastFireFieldOptions {
   required: boolean;
-  validate: (value: any) => void | string;
+  validate: (value: any) => ValidationResult;
 }
+
+export type ValidationResult = void | string;

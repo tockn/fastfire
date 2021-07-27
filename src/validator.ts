@@ -29,7 +29,7 @@ export const validateRequiredDocumentFields = <T extends FastFireDocument<T>>(
 
 class DocumentValidationError extends Error {
   constructor(documentName: string, message: string) {
-    super(`${documentName} Validation Error! ${message}`);
+    super(`"${documentName}" ${message}`);
   }
 }
 

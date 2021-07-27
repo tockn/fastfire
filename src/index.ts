@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import { FastFireDocument } from './fastfire_document';
 import { FastFireReference } from './fastfire_reference';
 import { FastFireField } from './fastfire_field';
+import { ValidationResult } from './types';
 
 export * from './fastfire';
 export * from './fastfire_document';
@@ -40,14 +41,13 @@ class Article extends FastFireDocument<Article> {
   @FastFireReference(User)
   author!: User;
 
-  static validateBody(body: string): void | string {
-    if (body.length > 2) return 'too long';
+  static validateBody(body: string): ValidationResult {
+    if (body.length > 20) return 'too long';
   }
 }
 
 const exec = async () => {
   const doc = await FastFire.create(Article, {
-    title: 'title dayo',
     body: 'body dayo',
   });
   console.log(await FastFire.findById(Article, doc.id));
