@@ -63,17 +63,10 @@ export abstract class FastFire {
     return new QueryChain(documentClass, query);
   }
 
-  static async all<T extends FastFireDocument<T>>(
+  static all<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>
-  ): Promise<T[]> {
-    const snapshots = await this.firestore.collection(documentClass.name).get();
-    const results: T[] = [];
-    snapshots.forEach(snapshot => {
-      const data = this.fromSnapshot<T>(documentClass, snapshot);
-      if (!data) return;
-      results.push(data);
-    });
-    return results;
+  ): QueryChain<T> {
+    return new QueryChain(documentClass);
   }
 
   static preload<T extends FastFireDocument<T>>(
