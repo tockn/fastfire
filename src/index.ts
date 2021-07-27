@@ -24,27 +24,31 @@ firebase.initializeApp(firebaseConfig);
 FastFire.initialize(firebase.firestore());
 
 class User extends FastFireDocument<User> {
-  @FastFireField()
+  @FastFireField({ required: true })
   name!: string;
   @FastFireField()
   bio!: string;
 }
 
 class Article extends FastFireDocument<Article> {
-  @FastFireField()
+  @FastFireField({ required: true })
   title!: string;
-  @FastFireField()
+  @FastFireField({ validate: Article.validateBody })
   body!: string;
 
   // Reference型はDecoratorを付ける
   @FastFireReference(User)
   author!: User;
+
+  static validateBody(body: string): void | string {
+    if (body.length > 2) return 'too long';
+  }
 }
 
 const exec = async () => {
   const doc = await FastFire.create(Article, {
-    title: 'hoge',
-    body: 'fuga',
+    title: 'title dayo',
+    body: 'body dayo',
   });
   console.log(await FastFire.findById(Article, doc.id));
   // const query = await FastFire.preload(Article, ['author']).where(

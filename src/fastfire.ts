@@ -3,6 +3,10 @@ import { QueryChain } from './query_chain';
 import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';
 import { unique } from './utils';
+import {
+  validateDocumentFields,
+  validateRequiredDocumentFields,
+} from './validator';
 
 export abstract class FastFire {
   static firestore: firebase.firestore.Firestore;
@@ -15,6 +19,9 @@ export abstract class FastFire {
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
+    validateDocumentFields(documentClass, fields);
+    validateRequiredDocumentFields(documentClass, fields);
+
     const data: DocumentFields<T> = {};
     for (const [key, value] of Object.entries(fields)) {
       if (
@@ -24,9 +31,6 @@ export abstract class FastFire {
         data[key as keyof typeof data] = value.reference;
         continue;
       }
-      if (!documentClass.fieldMap[key])
-        throw new UnknownFieldCreateError(documentClass.name, key);
-      // TODO We can implement validation logic here
       data[key as keyof typeof data] = value;
     }
     const docRef = await this.firestore
@@ -98,13 +102,5 @@ export abstract class FastFire {
       }
     }
     return obj;
-  }
-}
-
-class UnknownFieldCreateError extends Error {
-  constructor(documentName: string, fieldName: string) {
-    super(
-      `You are trying to create unknown field "${fieldName}" in "${documentName}"`
-    );
   }
 }

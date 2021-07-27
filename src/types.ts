@@ -5,6 +5,7 @@ export interface IDocumentClass<T> {
   name: string;
   readonly referenceClassMap: ReferenceClassMap;
   readonly fieldMap: FieldMap;
+  readonly fieldOptionsMap: FieldOptionsMap;
 }
 
 export type DocumentFields<T> = {
@@ -13,3 +14,9 @@ export type DocumentFields<T> = {
 
 export type ReferenceClassMap = { [key: string]: IDocumentClass<any> };
 export type FieldMap = { [fieldName: string]: boolean };
+export type FieldOptionsMap = { [fieldName: string]: IFastFireFieldOptions };
+
+export interface IFastFireFieldOptions {
+  required: boolean;
+  validate: (value: any) => void | string;
+}

@@ -5,11 +5,14 @@ import {
   DocumentFields,
   IDocumentClass,
   ReferenceClassMap,
+  FieldOptionsMap,
 } from './types';
+import { validateDocumentFields } from './validator';
 
 export class FastFireDocument<T> {
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
   static fieldMaps: { [key: string]: FieldMap } = {};
+  static fieldOptionsMaps: { [key: string]: FieldOptionsMap } = {};
 
   static get collection(): firebase.firestore.CollectionReference {
     return FastFire.firestore.collection(this.name);
@@ -39,6 +42,12 @@ export class FastFireDocument<T> {
     return FastFireDocument.fieldMaps[this.name];
   }
 
+  static get fieldOptionsMap(): FieldOptionsMap {
+    if (!FastFireDocument.fieldOptionsMaps[this.name])
+      FastFireDocument.fieldOptionsMaps[this.name] = {};
+    return FastFireDocument.fieldOptionsMaps[this.name];
+  }
+
   get reference(): firebase.firestore.DocumentReference {
     return FastFire.firestore.collection(this.constructor.name).doc(this.id);
   }
@@ -47,6 +56,7 @@ export class FastFireDocument<T> {
     if (this.fastFireOptions.restrictUpdate) {
       throw new AvoidInfiniteLoopError();
     }
+    validateDocumentFields(this.constructor as IDocumentClass<any>, fields);
     await this.reference.update(fields);
   }
 
