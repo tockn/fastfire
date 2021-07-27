@@ -51,6 +51,7 @@ Define a class to treat as a Firebase document and extends `FastFireDocument` in
 
 ```typescript
 class User extends FastFireDocument<User> {
+  // You need to write `FastFireField` decorator on the Firestore document field props.
   @FastFireField()
   name!: string
   @FastFireField()
@@ -63,10 +64,12 @@ class Article extends FastFireDocument<Article> {
   @FastFireField()
   body!: string
 
+  // You need to write `FastFireReference` decorator on the Firestore Reference Type document field props.
   @FastFireReference(User)
   author!: User
 }
 ```
+
 
 ### Create a Document
 
