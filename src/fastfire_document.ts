@@ -64,9 +64,9 @@ export class FastFireDocument<T> {
     await this.reference.delete();
   }
 
-  onChange(cb: (doc: FastFireDocument<T> | null) => void) {
+  onChange(cb: (doc: T | null) => void) {
     this.reference.onSnapshot(snapshot => {
-      const doc = FastFire.fromSnapshot<FastFireDocument<T>>(
+      const doc = FastFire.fromSnapshot(
         this.constructor as IDocumentClass<any>,
         snapshot
       );
