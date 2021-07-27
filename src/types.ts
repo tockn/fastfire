@@ -4,6 +4,7 @@ export interface IDocumentClass<T> {
   new (...args: any): T;
   name: string;
   readonly referenceClassMap: ReferenceClassMap;
+  readonly fieldMap: FieldMap;
 }
 
 export type DocumentFields<T> = {
@@ -11,3 +12,4 @@ export type DocumentFields<T> = {
 };
 
 export type ReferenceClassMap = { [key: string]: IDocumentClass<any> };
+export type FieldMap = { [fieldName: string]: boolean };

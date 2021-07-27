@@ -1,9 +1,15 @@
 import firebase from 'firebase';
 import { FastFire } from './fastfire';
-import { DocumentFields, IDocumentClass, ReferenceClassMap } from './types';
+import {
+  FieldMap,
+  DocumentFields,
+  IDocumentClass,
+  ReferenceClassMap,
+} from './types';
 
 export class FastFireDocument<T> {
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
+  static fieldMaps: { [key: string]: FieldMap } = {};
 
   static get collection(): firebase.firestore.CollectionReference {
     return FastFire.firestore.collection(this.name);
@@ -11,8 +17,11 @@ export class FastFireDocument<T> {
 
   // id is a firestore document id
   public id: string;
-  // to avoid infinite loop in onChange
-  public restrictUpdate = false;
+
+  public fastFireOptions = {
+    // to avoid infinite loop in onChange
+    restrictUpdate: false,
+  };
 
   constructor(id: string) {
     this.id = id;
@@ -24,12 +33,18 @@ export class FastFireDocument<T> {
     return FastFireDocument.referenceClassMaps[this.name];
   }
 
+  static get fieldMap(): FieldMap {
+    if (!FastFireDocument.fieldMaps[this.name])
+      FastFireDocument.fieldMaps[this.name] = {};
+    return FastFireDocument.fieldMaps[this.name];
+  }
+
   get reference(): firebase.firestore.DocumentReference {
     return FastFire.firestore.collection(this.constructor.name).doc(this.id);
   }
 
   async update(fields: DocumentFields<T>) {
-    if (this.restrictUpdate) {
+    if (this.fastFireOptions.restrictUpdate) {
       throw new AvoidInfiniteLoopError();
     }
     await this.reference.update(fields);
@@ -41,11 +56,11 @@ export class FastFireDocument<T> {
 
   onChange(cb: (doc: FastFireDocument<T> | null) => void) {
     this.reference.onSnapshot(snapshot => {
-      const doc = FastFire.fromSnapshot(
+      const doc = FastFire.fromSnapshot<FastFireDocument<T>>(
         this.constructor as IDocumentClass<any>,
         snapshot
       );
-      doc.restrictUpdate = true;
+      if (doc) doc.fastFireOptions.restrictUpdate = true;
       cb(doc);
     });
   }

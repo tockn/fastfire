@@ -51,12 +51,16 @@ Define a class to treat as a Firebase document and extends `FastFireDocument` in
 
 ```typescript
 class User extends FastFireDocument<User> {
+  @FastFireField()
   name!: string
+  @FastFireField()
   bio!: string
 }
 
 class Article extends FastFireDocument<Article> {
+  @FastFireField()
   title!: string
+  @FastFireField()
   body!: string
 
   @FastFireReference(User)

@@ -15,12 +15,19 @@ export abstract class FastFire {
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
-    const data = Object.assign({}, fields);
-    for (const key of Object.keys(data) as (keyof typeof data)[]) {
-      if (!documentClass.referenceClassMap[key as never]) continue;
-      if (data[key] instanceof FastFireDocument) {
-        data[key] = (data[key] as any).reference;
+    const data: DocumentFields<T> = {};
+    for (const [key, value] of Object.entries(fields)) {
+      if (
+        documentClass.referenceClassMap[key] &&
+        value instanceof FastFireDocument
+      ) {
+        data[key as keyof typeof data] = value.reference;
+        continue;
       }
+      if (!documentClass.fieldMap[key])
+        throw new UnknownFieldCreateError(documentClass.name, key);
+      // TODO We can implement validation logic here
+      data[key as keyof typeof data] = value;
     }
     const docRef = await this.firestore
       .collection(documentClass.name)
@@ -91,5 +98,13 @@ export abstract class FastFire {
       }
     }
     return obj;
+  }
+}
+
+class UnknownFieldCreateError extends Error {
+  constructor(documentName: string, fieldName: string) {
+    super(
+      `You are trying to create unknown field "${fieldName}" in "${documentName}"`
+    );
   }
 }

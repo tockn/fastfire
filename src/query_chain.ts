@@ -104,7 +104,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
       const docs = await this.execQuery();
       cb(
         docs.map(doc => {
-          doc.restrictUpdate = true;
+          doc.fastFireOptions.restrictUpdate = true;
           return doc;
         })
       );
