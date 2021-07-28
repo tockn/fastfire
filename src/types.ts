@@ -22,3 +22,8 @@ export interface IFastFireFieldOptions {
 }
 
 export type ValidationResult = void | string;
+
+export interface FastFireDocumentOptions {
+  // to avoid infinite loop in onChange
+  restrictUpdate: boolean;
+}

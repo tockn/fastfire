@@ -1,3 +1,8 @@
+// import firebase from 'firebase';
+// import { FastFire } from './fastfire';
+// import { FastFireDocument } from './fastfire_document';
+// import { FastFireField } from './fastfire_field';
+
 export * from './fastfire';
 export * from './fastfire_document';
 export * from './query_chain';
@@ -38,27 +43,14 @@ export * from './types';
 //     if (body.length > 20) return 'too long';
 //   }
 // }
-//
+
 // const exec = async () => {
-//   const doc = await FastFire.create(Article, {
-//     body: 'body dayo',
+//   await FastFire.runTransaction(async transaction => {
+//     const user = await transaction.findById(User, '4Uar6RBThDiI8DTPQalM');
+//     if (user) {
+//       await transaction.delete(user);
+//     }
 //   });
-//   console.log(await FastFire.findById(Article, doc.id));
-//   // const query = await FastFire.preload(Article, ['author']).where(
-//   //   'title',
-//   //   '==',
-//   //   'title'
-//   // );
-//   // query.onResultChange(docs => {
-//   //   console.log('updated!', docs);
-//   // });
-//   // console.log(await query.get());
-//
-//   // const doc = await FastFire.findById(Article, 'LmfQE9rAFKx3xNJbOATZ');
-//   // // const doc = await FastFire.findById(Article, 'N0Oc0PzH4b95t6LlSEV5');
-//   // doc?.onChange(async doc => {
-//   //   console.log(doc);
-//   // });
 // };
 //
 // exec().catch(e => console.error(e));

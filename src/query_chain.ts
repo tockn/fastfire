@@ -55,8 +55,8 @@ export class QueryChain<T extends FastFireDocument<T>> {
   }
 
   async findById(id: string): Promise<T | null> {
-    const docById = await this.collectionRef.doc(id).get();
-    if (!docById.exists) return null;
+    const snapshot = await this.collectionRef.doc(id).get();
+    if (!snapshot.exists) return null;
 
     if (this.query) {
       const docs = await this.execQuery();
@@ -65,7 +65,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
       }
       return null;
     }
-    return FastFire.fromSnapshot<T>(this.documentClass, docById);
+    return FastFireDocument.fromSnapshot<T>(this.documentClass, snapshot);
   }
 
   limit(limit: number): QueryChain<T> {
@@ -136,7 +136,10 @@ export class QueryChain<T extends FastFireDocument<T>> {
     const promises: Promise<void>[] = [];
     snapshots.forEach(snapshot => {
       const promise = new Promise<void>(resolve => {
-        const doc = FastFire.fromSnapshot<T>(this.documentClass, snapshot);
+        const doc = FastFireDocument.fromSnapshot<T>(
+          this.documentClass,
+          snapshot
+        );
         if (!doc) return;
         preload<T>(doc, this.preloadReferenceFields).then(() => {
           docs.push(doc);

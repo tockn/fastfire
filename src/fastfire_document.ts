@@ -6,6 +6,7 @@ import {
   IDocumentClass,
   ReferenceClassMap,
   FieldOptionsMap,
+  FastFireDocumentOptions,
 } from './types';
 import { validateDocumentFields } from './validator';
 
@@ -21,7 +22,7 @@ export class FastFireDocument<T> {
   // id is a firestore document id
   public id: string;
 
-  public fastFireOptions = {
+  public fastFireOptions: FastFireDocumentOptions = {
     // to avoid infinite loop in onChange
     restrictUpdate: false,
   };
@@ -66,13 +67,34 @@ export class FastFireDocument<T> {
 
   onChange(cb: (doc: T | null) => void) {
     this.reference.onSnapshot(snapshot => {
-      const doc = FastFire.fromSnapshot(
+      const doc = FastFireDocument.fromSnapshot(
         this.constructor as IDocumentClass<any>,
         snapshot
       );
       if (doc) doc.fastFireOptions.restrictUpdate = true;
       cb(doc);
     });
+  }
+
+  static fromSnapshot<T extends FastFireDocument<T>>(
+    documentClass: IDocumentClass<T>,
+    snapshot: firebase.firestore.DocumentSnapshot
+  ): T | null {
+    if (!snapshot.exists) return null;
+    const obj = new documentClass(snapshot.id);
+
+    const data = snapshot.data() as never;
+    const keys = Object.keys(data) as never[];
+    for (const key of keys) {
+      if (documentClass.referenceClassMap[key]) {
+        obj[key] = new documentClass.referenceClassMap[key](
+          (data[key] as firebase.firestore.DocumentReference).id
+        ) as never;
+      } else {
+        obj[key] = data[key] as never;
+      }
+    }
+    return obj;
   }
 }
 

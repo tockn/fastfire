@@ -3,10 +3,8 @@ import { QueryChain } from './query_chain';
 import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';
 import { unique } from './utils';
-import {
-  validateDocumentFields,
-  validateRequiredDocumentFields,
-} from './validator';
+import { FastFireTransaction } from './fastfire_transaction';
+import { fastFireFieldsToFirebaseFields } from './document_converter';
 
 export abstract class FastFire {
   static firestore: firebase.firestore.Firestore;
@@ -15,40 +13,38 @@ export abstract class FastFire {
     this.firestore = firestore;
   }
 
+  static async runTransaction<T>(
+    updateFunction: (transaction: FastFireTransaction) => Promise<T>
+  ): Promise<T> {
+    return await this.firestore.runTransaction<T>(async transaction => {
+      return await updateFunction(new FastFireTransaction(transaction));
+    });
+  }
+
   static async create<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
-    validateDocumentFields(documentClass, fields);
-    validateRequiredDocumentFields(documentClass, fields);
-
-    const data: DocumentFields<T> = {};
-    for (const [key, value] of Object.entries(fields)) {
-      if (
-        documentClass.referenceClassMap[key] &&
-        value instanceof FastFireDocument
-      ) {
-        data[key as keyof typeof data] = value.reference;
-        continue;
-      }
-      data[key as keyof typeof data] = value;
-    }
+    const firebaseFields = fastFireFieldsToFirebaseFields(
+      documentClass,
+      fields
+    );
     const docRef = await this.firestore
       .collection(documentClass.name)
-      .add(data);
-    const doc = await docRef.get();
-    return this.fromSnapshot(documentClass, doc) as T;
+      .add(firebaseFields);
+    const snapshot = await docRef.get();
+    return FastFireDocument.fromSnapshot(documentClass, snapshot) as T;
   }
 
   static async findById<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     id: string
   ): Promise<T | null> {
-    const doc = await this.firestore
+    const snapshot = await this.firestore
       .collection(documentClass.name)
       .doc(id)
       .get();
-    return this.fromSnapshot<T>(documentClass, doc);
+    return FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
   }
 
   static where<T extends FastFireDocument<T>>(
@@ -74,26 +70,5 @@ export abstract class FastFire {
     referenceFields: (keyof T)[]
   ): QueryChain<T> {
     return new QueryChain<T>(documentClass, undefined, unique(referenceFields));
-  }
-
-  static fromSnapshot<T extends FastFireDocument<T>>(
-    documentClass: IDocumentClass<T>,
-    snapshot: firebase.firestore.DocumentSnapshot
-  ): T | null {
-    if (!snapshot.exists) return null;
-    const obj = new documentClass(snapshot.id);
-
-    const data = snapshot.data() as never;
-    const keys = Object.keys(data) as never[];
-    for (const key of keys) {
-      if (documentClass.referenceClassMap[key]) {
-        obj[key] = new documentClass.referenceClassMap[key](
-          (data[key] as firebase.firestore.DocumentReference).id
-        ) as never;
-      } else {
-        obj[key] = data[key] as never;
-      }
-    }
-    return obj;
   }
 }
