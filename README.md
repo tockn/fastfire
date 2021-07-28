@@ -186,3 +186,16 @@ class User extends FastFireDocument<User> {
 
 await FastFire.create(User, { bio: "hello" }) // DocumentValidationError: "User" name: name is too long!
 ```
+
+### Transaction
+
+Transaction is also supported!
+
+```typescript
+FastFire.runTransaction(async transaction => {
+  const user = await transaction.findById(User, "AKDV23DI97CKUQAM")
+  if (!user) return
+  
+  await transaction.update(user, { bio: "tx is working!"} )
+})
+```
