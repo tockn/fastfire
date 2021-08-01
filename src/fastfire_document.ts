@@ -84,14 +84,17 @@ export class FastFireDocument<T> {
     const obj = new documentClass(snapshot.id);
 
     const data = snapshot.data() as never;
-    const keys = Object.keys(data) as never[];
-    for (const key of keys) {
+    for (let [key, value] of Object.entries(data)) {
+      const objKey = key as keyof typeof obj;
+
       if (documentClass.referenceClassMap[key]) {
-        obj[key] = new documentClass.referenceClassMap[key](
-          (data[key] as firebase.firestore.DocumentReference).id
+        obj[objKey] = new documentClass.referenceClassMap[key](
+          (value as firebase.firestore.DocumentReference).id
         ) as never;
+      } else if (value instanceof firebase.firestore.Timestamp) {
+        obj[objKey] = value.toDate() as never;
       } else {
-        obj[key] = data[key] as never;
+        obj[objKey] = value as never;
       }
     }
     return obj;
