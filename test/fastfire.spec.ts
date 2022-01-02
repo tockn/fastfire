@@ -16,7 +16,7 @@ describe('FastFire', () => {
       FastFire.initialize(firebase.firestore());
     });
     it('found', async () => {
-      const result = await FastFire.findById(User, id);
+      const result = await FastFire.findById(User, '1');
       expect(result?.id).toEqual('1');
       expect(result?.name).toEqual('tockn');
     });
@@ -27,15 +27,10 @@ describe('FastFire', () => {
   });
   describe('create', () => {
     beforeEach(() => {
-      SetUpMockFirestore({
-        User: { '1': { name: 'tockn' } },
-      });
       FastFire.initialize(firebase.firestore());
     });
-    it('found', async () => {
-      const result = await FastFire.create(User, id);
-      expect(result?.id).toEqual('1');
-      expect(result?.name).toEqual('tockn');
+    it('created', async () => {
+      await FastFire.create(User, { name: 'tockn' });
     });
     it('not found', async () => {
       const result = await FastFire.findById(User, '2');

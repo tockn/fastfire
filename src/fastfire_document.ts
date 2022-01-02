@@ -9,6 +9,7 @@ import {
   FastFireDocumentOptions,
 } from './types';
 import { validateDocumentFields } from './validator';
+import Timestamp = firebase.firestore.Timestamp;
 
 export class FastFireDocument<T> {
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
@@ -91,7 +92,7 @@ export class FastFireDocument<T> {
         obj[objKey] = new documentClass.referenceClassMap[key](
           (value as firebase.firestore.DocumentReference).id
         ) as never;
-      } else if (value instanceof firebase.firestore.Timestamp) {
+      } else if (value instanceof Timestamp) {
         obj[objKey] = value.toDate() as never;
       } else {
         obj[objKey] = value as never;
