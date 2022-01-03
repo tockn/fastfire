@@ -110,17 +110,15 @@
 //   // const user = await FastFire.findById(User, 'XtckFWASbiYuXEaGQxef');
 //   // if (!user) return;
 //
-//   const desk = await FastFire.preload(Desk, ['author']).findById(
-//     '28qSVhNds05fKyxqcuBy'
-//   );
-//   console.log(desk?.author.name);
+//   const desk = await FastFire.findById(Desk, '28qSVhNds05fKyxqcuBy');
+//   console.log(desk?.author.id);
 //
-//   const desks = await FastFire.preload(Desk, ['author'])
-//     .where('totalPrice', '==', 800000)
-//     .get();
-//   desks.forEach(d => {
-//     console.log(d.author);
-//   });
+//   // const desks = await FastFire.preload(Desk, ['author'])
+//   //   .where('totalPrice', '==', 800000)
+//   //   .get();
+//   // desks.forEach(d => {
+//   //   console.log(d.author);
+//   // });
 //   // await desk?.update({ author: user });
 // };
 //

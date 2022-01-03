@@ -4,19 +4,19 @@ import { IDocumentClass, IFastFireReferenceOptions } from './types';
 export const FastFireReference = <T>(
   documentClass: IDocumentClass<T>,
   options?: Partial<IFastFireReferenceOptions>
-) => {
-  return (target: any, propertyKey: string) => {
+): PropertyDecorator => {
+  return (target, propertyKey) => {
     const documentName = target.constructor.name;
     if (!FastFireDocument.referenceClassMaps[documentName])
       FastFireDocument.referenceClassMaps[documentName] = {};
     FastFireDocument.referenceClassMaps[documentName][
-      propertyKey
+      propertyKey as never
     ] = documentClass;
 
     if (!FastFireDocument.referenceOptionsMaps[documentName])
       FastFireDocument.referenceOptionsMaps[documentName] = {};
     FastFireDocument.referenceOptionsMaps[documentName][
-      propertyKey
+      propertyKey as never
     ] = Object.assign({}, defaultReferenceOptions, options);
   };
 };
