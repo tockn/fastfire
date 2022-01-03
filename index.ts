@@ -1,47 +1,46 @@
-import { FastFire, FastFireDocument } from "./src";
+import { FastFire, FastFireDocument } from './src';
+import firebase from 'firebase/compat/app';
+import { FastFireField } from './dist';
 
-import firebase from "firebase";
+// const firebaseConfig = {
+//   apiKey: process.env.apiKey,
+//   authDomain: process.env.authDomain,
+//   projectId: process.env.projectId,
+//   storageBucket: process.env.storageBucket,
+//   messagingSenderId: process.env.messagingSenderId,
+//   appId: process.env.appId,
+// };
 
 const firebaseConfig = {
-  apiKey: process.env.apiKey,
-  authDomain: process.env.authDomain,
-  projectId: process.env.projectId,
-  storageBucket: process.env.storageBucket,
-  messagingSenderId: process.env.messagingSenderId,
-  appId: process.env.appId
+  apiKey: 'AIzaSyBeNk3HlfxpCz7VM0M7dlBSKgD5lxs2LLg',
+  authDomain: 'desktour-dev.firebaseapp.com',
+  projectId: 'desktour-dev',
+  storageBucket: 'desktour-dev.appspot.com',
+  messagingSenderId: '422473705553',
+  appId: '1:422473705553:web:43d7b2a303d38f7eb77070',
 };
+
 firebase.initializeApp(firebaseConfig);
 
-FastFire.initialize(firebase.firestore())
+FastFire.initialize(firebase.firestore());
 
-class Hoge extends FastFireDocument<Hoge> {
-  name!: string
-  description!: string
+export class Desk extends FastFireDocument<Desk> {
+  @FastFireField()
+  mainImageUrl!: string;
+
+  @FastFireField()
+  description!: string;
+
+  @FastFireField()
+  tags!: string[];
+
+  @FastFireField()
+  createdAt!: Date;
 }
 
-console.log("hello")
 const exec = async () => {
+  const desk = await FastFire.findById(Desk, '28qSVhNds05fKyxqcuBy');
+  console.log(desk);
+};
 
-  await FastFire.create(Hoge, {
-    name: "すごい",
-    description: "型の気持ちがわかってきた"
-  })
-
-  const hoge = await FastFire.findById(Hoge,"hoge")
-  await hoge?.update({
-    name: "fuga"
-  })
-  console.log(hoge?.description)
-
-  await FastFire.where(Hoge, "name", "==", "tockn").forEach((d) => {
-    console.log(d)
-  })
-
-  await FastFire.where(Hoge, "name", "==", "tockn").forEach((d) => {
-    console.log(d)
-  })
-
-  console.log({name: "tockn"})
-}
-
-exec().catch((e) => console.error(e))
+exec().catch(e => console.error(e));

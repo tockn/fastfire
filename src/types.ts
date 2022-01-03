@@ -1,9 +1,11 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat/app';
+import 'firebase/firestore';
 
 export interface IDocumentClass<T> {
   new (...args: any): T;
   name: string;
   readonly referenceClassMap: ReferenceClassMap;
+  readonly referenceOptionsMap: ReferenceOptionsMap;
   readonly fieldMap: FieldMap;
   readonly fieldOptionsMap: FieldOptionsMap;
 }
@@ -15,8 +17,16 @@ export type DocumentFields<T> = {
 export type ReferenceClassMap = { [key: string]: IDocumentClass<any> };
 export type FieldMap = { [fieldName: string]: boolean };
 export type FieldOptionsMap = { [fieldName: string]: IFastFireFieldOptions };
+export type ReferenceOptionsMap = {
+  [fieldName: string]: IFastFireReferenceOptions;
+};
 
 export interface IFastFireFieldOptions {
+  required: boolean;
+  validate: (value: any) => ValidationResult;
+}
+
+export interface IFastFireReferenceOptions {
   required: boolean;
   validate: (value: any) => ValidationResult;
 }

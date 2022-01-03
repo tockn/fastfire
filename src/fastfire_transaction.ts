@@ -1,4 +1,5 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat/app';
+import 'firebase/firestore';
 import { FastFireDocument } from './fastfire_document';
 import { DocumentFields, IDocumentClass } from './types';
 import { fastFireFieldsToFirebaseFields } from './document_converter';

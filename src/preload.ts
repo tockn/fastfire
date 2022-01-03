@@ -1,5 +1,4 @@
 import { FastFireDocument } from './fastfire_document';
-import { FastFire } from './fastfire';
 
 export const preload = async <T extends FastFireDocument<T>>(
   document: T,
@@ -24,7 +23,7 @@ export const preload = async <T extends FastFireDocument<T>>(
       }
       descriptor.value.reference.get().then(doc => {
         // @ts-ignore
-        document[field] = FastFire.fromSnapshot(
+        document[field] = FastFireDocument.fromSnapshot(
           descriptor.value.constructor,
           doc
         );

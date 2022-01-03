@@ -6,9 +6,14 @@ export const validateDocumentFields = <T extends FastFireDocument<T>>(
   fields: DocumentFields<T>
 ): void => {
   for (const [key, value] of Object.entries(fields)) {
-    if (!documentClass.fieldMap[key])
+    let validationResult = null;
+    if (documentClass.fieldMap[key]) {
+      validationResult = documentClass.fieldOptionsMap[key].validate(value);
+    } else if (documentClass.referenceClassMap[key]) {
+      validationResult = documentClass.referenceOptionsMap[key].validate(value);
+    } else {
       throw new UnknownFieldError(documentClass.name, key);
-    const validationResult = documentClass.fieldOptionsMap[key].validate(value);
+    }
     if (validationResult)
       throw new DocumentValidationError(
         documentClass.name,

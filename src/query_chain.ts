@@ -1,4 +1,5 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat/app';
+import 'firebase/firestore';
 import { FastFire } from './fastfire';
 import { IDocumentClass } from './types';
 import { preload } from './preload';
@@ -58,7 +59,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
     const snapshot = await this.collectionRef.doc(id).get();
     if (!snapshot.exists) return null;
 
-    if (this.query) {
+    if (this.query || this.preloadReferenceFields) {
       const docs = await this.execQuery();
       for (const doc of docs) {
         if (doc.id === id) return doc;

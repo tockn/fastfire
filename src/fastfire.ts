@@ -1,4 +1,5 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat/app';
+import 'firebase/firestore';
 import { QueryChain } from './query_chain';
 import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';

@@ -1,4 +1,4 @@
-import firebase from 'firebase';
+import firebase from 'firebase/compat/app';
 import { FastFire } from './fastfire';
 import {
   FieldMap,
@@ -7,12 +7,14 @@ import {
   ReferenceClassMap,
   FieldOptionsMap,
   FastFireDocumentOptions,
+  ReferenceOptionsMap,
 } from './types';
-import { validateDocumentFields } from './validator';
-import Timestamp = firebase.firestore.Timestamp;
+import { fastFireFieldsToFirebaseFields } from './document_converter';
 
 export class FastFireDocument<T> {
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
+  static referenceOptionsMaps: { [key: string]: ReferenceOptionsMap } = {};
+
   static fieldMaps: { [key: string]: FieldMap } = {};
   static fieldOptionsMaps: { [key: string]: FieldOptionsMap } = {};
 
@@ -50,16 +52,35 @@ export class FastFireDocument<T> {
     return FastFireDocument.fieldOptionsMaps[this.name];
   }
 
+  static get referenceOptionsMap(): ReferenceOptionsMap {
+    if (!FastFireDocument.referenceOptionsMaps[this.name])
+      FastFireDocument.referenceOptionsMaps[this.name] = {};
+    return FastFireDocument.referenceOptionsMaps[this.name];
+  }
+
+  get fieldMap(): FieldMap {
+    if (!FastFireDocument.fieldMaps[this.constructor.name])
+      FastFireDocument.fieldMaps[this.constructor.name] = {};
+    return FastFireDocument.fieldMaps[this.constructor.name];
+  }
+
   get reference(): firebase.firestore.DocumentReference {
     return FastFire.firestore.collection(this.constructor.name).doc(this.id);
+  }
+
+  get documentClass(): IDocumentClass<any> {
+    return this.constructor as IDocumentClass<any>;
   }
 
   async update(fields: DocumentFields<T>) {
     if (this.fastFireOptions.restrictUpdate) {
       throw new AvoidInfiniteLoopError();
     }
-    validateDocumentFields(this.constructor as IDocumentClass<any>, fields);
-    await this.reference.update(fields);
+    const firebaseFields = fastFireFieldsToFirebaseFields(
+      this.documentClass,
+      fields
+    );
+    await this.reference.update(firebaseFields);
   }
 
   async delete() {
@@ -68,10 +89,7 @@ export class FastFireDocument<T> {
 
   onChange(cb: (doc: T | null) => void) {
     this.reference.onSnapshot(snapshot => {
-      const doc = FastFireDocument.fromSnapshot(
-        this.constructor as IDocumentClass<any>,
-        snapshot
-      );
+      const doc = FastFireDocument.fromSnapshot(this.documentClass, snapshot);
       if (doc) doc.fastFireOptions.restrictUpdate = true;
       cb(doc);
     });
@@ -92,13 +110,27 @@ export class FastFireDocument<T> {
         obj[objKey] = new documentClass.referenceClassMap[key](
           (value as firebase.firestore.DocumentReference).id
         ) as never;
-      } else if (value instanceof Timestamp) {
-        obj[objKey] = value.toDate() as never;
+      } else if ((value as any).toDate instanceof Function) {
+        obj[objKey] = (value as any).toDate() as never;
       } else {
         obj[objKey] = value as never;
       }
     }
     return obj;
+  }
+
+  toJson(): { [key: string]: any } {
+    const keys = Object.keys(this.fieldMap);
+    const json = { id: this.id };
+    keys.forEach(k => {
+      const value = this[k as never];
+      if ((value as any) instanceof Date) {
+        json[k as never] = (value as Date).getTime() as never;
+        return;
+      }
+      json[k as never] = this[k as never] || null;
+    });
+    return json;
   }
 }
 
