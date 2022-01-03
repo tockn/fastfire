@@ -23,5 +23,6 @@ export const FastFireReference = <T>(
 
 const defaultReferenceOptions: IFastFireReferenceOptions = {
   required: true,
+  autoLoad: true,
   validate: () => {},
 };

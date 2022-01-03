@@ -34,7 +34,7 @@ export abstract class FastFire {
       .collection(documentClass.name)
       .add(firebaseFields);
     const snapshot = await docRef.get();
-    return FastFireDocument.fromSnapshot(documentClass, snapshot) as T;
+    return (await FastFireDocument.fromSnapshot(documentClass, snapshot)) as T;
   }
 
   static async findById<T extends FastFireDocument<T>>(
@@ -45,7 +45,7 @@ export abstract class FastFire {
       .collection(documentClass.name)
       .doc(id)
       .get();
-    return FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
+    return await FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
   }
 
   static where<T extends FastFireDocument<T>>(

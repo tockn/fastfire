@@ -21,9 +21,9 @@ export const preload = async <T extends FastFireDocument<T>>(
           `${document.constructor.name}.${field} is not FastFireDocument`
         );
       }
-      descriptor.value.reference.get().then(doc => {
+      descriptor.value.reference.get().then(async doc => {
         // @ts-ignore
-        document[field] = FastFireDocument.fromSnapshot(
+        document[field] = await FastFireDocument.fromSnapshot(
           descriptor.value.constructor,
           doc
         );

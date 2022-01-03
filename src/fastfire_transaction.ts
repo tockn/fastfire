@@ -34,7 +34,7 @@ export class FastFireTransaction {
     const snapshot = await this.firestoreTransaction.get(
       FastFire.firestore.collection(documentClass.name).doc(id)
     );
-    return FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
+    return await FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
   }
 
   async update<T extends FastFireDocument<T>>(

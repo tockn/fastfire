@@ -10,6 +10,7 @@ import {
   ReferenceOptionsMap,
 } from './types';
 import { fastFireFieldsToFirebaseFields } from './document_converter';
+import { preload } from './preload';
 
 export class FastFireDocument<T> {
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
@@ -87,18 +88,32 @@ export class FastFireDocument<T> {
     await this.reference.delete();
   }
 
+  async loadAutoLoadReference(): Promise<void> {
+    const preloadFields: string[] = [];
+    Object.keys(this.documentClass.referenceOptionsMap).forEach(k => {
+      const options = this.documentClass.referenceOptionsMap[k];
+      if (!options.autoLoad) return;
+
+      preloadFields.push(k);
+    });
+    await preload(this as any, preloadFields);
+  }
+
   onChange(cb: (doc: T | null) => void) {
-    this.reference.onSnapshot(snapshot => {
-      const doc = FastFireDocument.fromSnapshot(this.documentClass, snapshot);
+    this.reference.onSnapshot(async snapshot => {
+      const doc = await FastFireDocument.fromSnapshot(
+        this.documentClass,
+        snapshot
+      );
       if (doc) doc.fastFireOptions.restrictUpdate = true;
       cb(doc);
     });
   }
 
-  static fromSnapshot<T extends FastFireDocument<T>>(
+  static async fromSnapshot<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
     snapshot: firebase.firestore.DocumentSnapshot
-  ): T | null {
+  ): Promise<T | null> {
     if (!snapshot.exists) return null;
     const obj = new documentClass(snapshot.id);
 
@@ -116,6 +131,7 @@ export class FastFireDocument<T> {
         obj[objKey] = value as never;
       }
     }
+    await obj.loadAutoLoadReference();
     return obj;
   }
 

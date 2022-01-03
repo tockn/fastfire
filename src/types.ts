@@ -28,6 +28,7 @@ export interface IFastFireFieldOptions {
 
 export interface IFastFireReferenceOptions {
   required: boolean;
+  autoLoad: boolean;
   validate: (value: any) => ValidationResult;
 }
 

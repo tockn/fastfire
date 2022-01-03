@@ -66,7 +66,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
       }
       return null;
     }
-    return FastFireDocument.fromSnapshot<T>(this.documentClass, snapshot);
+    return await FastFireDocument.fromSnapshot<T>(this.documentClass, snapshot);
   }
 
   limit(limit: number): QueryChain<T> {
@@ -136,8 +136,8 @@ export class QueryChain<T extends FastFireDocument<T>> {
 
     const promises: Promise<void>[] = [];
     snapshots.forEach(snapshot => {
-      const promise = new Promise<void>(resolve => {
-        const doc = FastFireDocument.fromSnapshot<T>(
+      const promise = new Promise<void>(async resolve => {
+        const doc = await FastFireDocument.fromSnapshot<T>(
           this.documentClass,
           snapshot
         );
