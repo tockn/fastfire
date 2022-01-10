@@ -86,7 +86,11 @@
 // FastFire.initialize(firebase.firestore());
 //
 // export class User extends FastFireDocument<User> {
+//   @FastFireField()
 //   name!: string;
+//
+//   @FastFireField()
+//   bio!: string;
 // }
 //
 // export class Desk extends FastFireDocument<Desk> {
@@ -111,7 +115,7 @@
 //   // if (!user) return;
 //
 //   const desk = await FastFire.findById(Desk, '28qSVhNds05fKyxqcuBy');
-//   console.log(desk?.author);
+//   console.log(desk?.toJson());
 //
 //   // const desks = await FastFire.preload(Desk, ['author'])
 //   //   .where('totalPrice', '==', 800000)

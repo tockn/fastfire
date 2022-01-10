@@ -1,15 +1,14 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/firestore';
 import { FastFireDocument } from './fastfire_document';
 import { DocumentFields, IDocumentClass } from './types';
 import { fastFireFieldsToFirebaseFields } from './document_converter';
 import { FastFire } from './fastfire';
 import { validateDocumentFields } from './validator';
+import { FirestoreTransaction } from './firestore';
 
 export class FastFireTransaction {
-  private firestoreTransaction: firebase.firestore.Transaction;
+  private firestoreTransaction: FirestoreTransaction;
 
-  constructor(firestoreTransaction: firebase.firestore.Transaction) {
+  constructor(firestoreTransaction: FirestoreTransaction) {
     this.firestoreTransaction = firestoreTransaction;
   }
 
@@ -21,6 +20,7 @@ export class FastFireTransaction {
       documentClass,
       fields
     );
+    // @ts-ignore
     this.firestoreTransaction = await this.firestoreTransaction.set(
       FastFire.firestore.collection(documentClass.name).doc(),
       firebaseFields
@@ -32,8 +32,10 @@ export class FastFireTransaction {
     id: string
   ): Promise<T | null> {
     const snapshot = await this.firestoreTransaction.get(
+      // @ts-ignore
       FastFire.firestore.collection(documentClass.name).doc(id)
     );
+    // @ts-ignore
     return await FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
   }
 
@@ -42,10 +44,12 @@ export class FastFireTransaction {
     fields: DocumentFields<T>
   ) {
     validateDocumentFields(document.constructor as IDocumentClass<any>, fields);
+    // @ts-ignore
     await this.firestoreTransaction.update(document.reference, fields);
   }
 
   async delete<T extends FastFireDocument<T>>(document: FastFireDocument<T>) {
+    // @ts-ignore
     await this.firestoreTransaction.delete(document.reference);
   }
 }

@@ -8,18 +8,17 @@ import { unique } from './utils';
 import FieldPath = firebase.firestore.FieldPath;
 import OrderByDirection = firebase.firestore.OrderByDirection;
 import WhereFilterOp = firebase.firestore.WhereFilterOp;
-import Query = firebase.firestore.Query;
-import CollectionReference = firebase.firestore.CollectionReference;
+import { FirebaseQuery, FirestoreCollectionReference } from './firestore';
 
 export class QueryChain<T extends FastFireDocument<T>> {
   documentClass: IDocumentClass<T>;
-  query?: Query;
+  query?: FirebaseQuery;
 
   private preloadReferenceFields: (keyof T)[];
 
   constructor(
     documentClass: IDocumentClass<T>,
-    query?: Query,
+    query?: FirebaseQuery,
     preloadReferenceFields: (keyof T)[] = []
   ) {
     this.documentClass = documentClass;
@@ -27,7 +26,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
     this.preloadReferenceFields = preloadReferenceFields;
   }
 
-  get collectionRef(): CollectionReference {
+  get collectionRef(): FirestoreCollectionReference {
     return FastFire.firestore.collection(this.documentClass.name);
   }
 

@@ -1,16 +1,16 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/firestore';
 import { QueryChain } from './query_chain';
 import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';
 import { unique } from './utils';
 import { FastFireTransaction } from './fastfire_transaction';
 import { fastFireFieldsToFirebaseFields } from './document_converter';
+import { Firestore } from './firestore';
+import firebase from 'firebase/compat/app';
 
 export abstract class FastFire {
-  static firestore: firebase.firestore.Firestore;
+  static firestore: Firestore;
 
-  static initialize(firestore: firebase.firestore.Firestore) {
+  static initialize(firestore: Firestore) {
     this.firestore = firestore;
   }
 

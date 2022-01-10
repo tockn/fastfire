@@ -1,5 +1,5 @@
-import firebase from 'firebase/compat/app';
 import 'firebase/firestore';
+import { FirestoreDocumentReference } from './firestore';
 
 export interface IDocumentClass<T> {
   new (...args: any): T;
@@ -11,7 +11,7 @@ export interface IDocumentClass<T> {
 }
 
 export type DocumentFields<T> = {
-  [key in keyof T]?: T[keyof T] | firebase.firestore.DocumentReference;
+  [key in keyof T]?: T[keyof T] | FirestoreDocumentReference;
 };
 
 export type ReferenceClassMap = { [key: string]: IDocumentClass<any> };

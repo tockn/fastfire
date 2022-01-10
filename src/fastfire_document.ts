@@ -11,6 +11,11 @@ import {
 } from './types';
 import { fastFireFieldsToFirebaseFields } from './document_converter';
 import { preload } from './preload';
+import {
+  FirestoreCollectionReference,
+  FirestoreDocumentReference,
+  FirestoreDocumentSnapshot,
+} from './firestore';
 
 export class FastFireDocument<T> {
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
@@ -19,7 +24,7 @@ export class FastFireDocument<T> {
   static fieldMaps: { [key: string]: FieldMap } = {};
   static fieldOptionsMaps: { [key: string]: FieldOptionsMap } = {};
 
-  static get collection(): firebase.firestore.CollectionReference {
+  static get collection(): FirestoreCollectionReference {
     return FastFire.firestore.collection(this.name);
   }
 
@@ -65,7 +70,7 @@ export class FastFireDocument<T> {
     return FastFireDocument.fieldMaps[this.constructor.name];
   }
 
-  get reference(): firebase.firestore.DocumentReference {
+  get reference(): FirestoreDocumentReference {
     return FastFire.firestore.collection(this.constructor.name).doc(this.id);
   }
 
@@ -112,7 +117,7 @@ export class FastFireDocument<T> {
 
   static async fromSnapshot<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,
-    snapshot: firebase.firestore.DocumentSnapshot
+    snapshot: FirestoreDocumentSnapshot
   ): Promise<T | null> {
     if (!snapshot.exists) return null;
     const obj = new documentClass(snapshot.id);
@@ -136,15 +141,18 @@ export class FastFireDocument<T> {
   }
 
   toJson(): { [key: string]: any } {
-    const keys = Object.keys(this.fieldMap);
+    const fields = Object.keys(this.fieldMap);
     const json = { id: this.id };
-    keys.forEach(k => {
+    fields.forEach(k => {
       const value = this[k as never];
       if ((value as any) instanceof Date) {
         json[k as never] = (value as Date).getTime() as never;
         return;
       }
       json[k as never] = this[k as never] || null;
+    });
+    Object.keys(this.documentClass.referenceClassMap).forEach(k => {
+      json[k as never] = (this[k as never] as any).toJson() as never;
     });
     return json;
   }
