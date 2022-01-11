@@ -131,7 +131,6 @@
 import { FastFire } from './fastfire';
 import { FastFireDocument } from './fastfire_document';
 import { FastFireDocumentOptions } from './types';
-import { FastFireTransaction } from './fastfire_transaction';
 import { FastFireField } from './fastfire_field';
 import { FastFireReference } from './fastfire_reference';
 
@@ -139,7 +138,6 @@ export {
   FastFire,
   FastFireDocument,
   FastFireDocumentOptions,
-  FastFireTransaction,
   FastFireField,
   FastFireReference,
 };

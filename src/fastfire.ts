@@ -2,7 +2,6 @@ import { QueryChain } from './query_chain';
 import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';
 import { unique } from './utils';
-import { FastFireTransaction } from './fastfire_transaction';
 import { fastFireFieldsToFirebaseFields } from './document_converter';
 import { Firestore } from './firestore';
 import firebase from 'firebase/compat/app';
@@ -14,13 +13,14 @@ export abstract class FastFire {
     this.firestore = firestore;
   }
 
-  static async runTransaction<T>(
-    updateFunction: (transaction: FastFireTransaction) => Promise<T>
-  ): Promise<T> {
-    return await this.firestore.runTransaction<T>(async transaction => {
-      return await updateFunction(new FastFireTransaction(transaction));
-    });
-  }
+  // static async runTransaction<T>(
+  //   updateFunction: (transaction: FastFireTransaction) => Promise<T>
+  // ): Promise<T> {
+  //   // @ts-ignore
+  //   return await this.firestore.runTransaction<T>(async transaction => {
+  //     return await updateFunction(new FastFireTransaction(transaction));
+  //   });
+  // }
 
   static async create<T extends FastFireDocument<T>>(
     documentClass: IDocumentClass<T>,

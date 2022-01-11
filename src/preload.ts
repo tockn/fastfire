@@ -21,14 +21,17 @@ export const preload = async <T extends FastFireDocument<T>>(
           `${document.constructor.name}.${field} is not FastFireDocument`
         );
       }
-      descriptor.value.reference.get().then(async doc => {
+      descriptor.value.reference
+        .get()
         // @ts-ignore
-        document[field] = await FastFireDocument.fromSnapshot(
-          descriptor.value.constructor,
-          doc
-        );
-        resolve();
-      });
+        .then(async doc => {
+          // @ts-ignore
+          document[field] = await FastFireDocument.fromSnapshot(
+            descriptor.value.constructor,
+            doc
+          );
+          resolve();
+        });
     });
     promises.push(promise);
   }

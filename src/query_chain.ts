@@ -8,7 +8,11 @@ import { unique } from './utils';
 import FieldPath = firebase.firestore.FieldPath;
 import OrderByDirection = firebase.firestore.OrderByDirection;
 import WhereFilterOp = firebase.firestore.WhereFilterOp;
-import { FirebaseQuery, FirestoreCollectionReference } from './firestore';
+import {
+  FirebaseQuery,
+  FirebaseQueryDocumentSnapshot,
+  FirestoreCollectionReference,
+} from './firestore';
 
 export class QueryChain<T extends FastFireDocument<T>> {
   documentClass: IDocumentClass<T>;
@@ -134,7 +138,7 @@ export class QueryChain<T extends FastFireDocument<T>> {
     const docs: T[] = [];
 
     const promises: Promise<void>[] = [];
-    snapshots.forEach(snapshot => {
+    snapshots.forEach((snapshot: FirebaseQueryDocumentSnapshot) => {
       const promise = new Promise<void>(async resolve => {
         const doc = await FastFireDocument.fromSnapshot<T>(
           this.documentClass,

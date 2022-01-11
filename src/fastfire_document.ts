@@ -105,7 +105,7 @@ export class FastFireDocument<T> {
   }
 
   onChange(cb: (doc: T | null) => void) {
-    this.reference.onSnapshot(async snapshot => {
+    this.reference.onSnapshot(async (snapshot: FirestoreDocumentSnapshot) => {
       const doc = await FastFireDocument.fromSnapshot(
         this.documentClass,
         snapshot
@@ -130,7 +130,7 @@ export class FastFireDocument<T> {
         obj[objKey] = new documentClass.referenceClassMap[key](
           (value as firebase.firestore.DocumentReference).id
         ) as never;
-      } else if ((value as any).toDate instanceof Function) {
+      } else if ((value as any)?.toDate instanceof Function) {
         obj[objKey] = (value as any).toDate() as never;
       } else {
         obj[objKey] = value as never;
