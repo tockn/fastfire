@@ -1,7 +1,7 @@
 import { FastFireDocument } from './fastfire_document';
 import { DocumentFields, IDocumentClass } from './types';
 
-export const validateDocumentFields = <T extends FastFireDocument<T>>(
+export const validateDocumentFields = <T extends FastFireDocument<any>>(
   documentClass: IDocumentClass<T>,
   fields: DocumentFields<T>
 ): void => {
@@ -22,7 +22,7 @@ export const validateDocumentFields = <T extends FastFireDocument<T>>(
   }
 };
 
-export const validateRequiredDocumentFields = <T extends FastFireDocument<T>>(
+export const validateRequiredDocumentFields = <T extends FastFireDocument<any>>(
   documentClass: IDocumentClass<T>,
   fields: DocumentFields<T>
 ): void => {

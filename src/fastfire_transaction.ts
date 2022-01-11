@@ -12,7 +12,7 @@
 //     this.firestoreTransaction = firestoreTransaction;
 //   }
 //
-//   async create<T extends FastFireDocument<T>>(
+//   async create<T extends FastFireDocument<any>>(
 //     documentClass: IDocumentClass<T>,
 //     fields: DocumentFields<T>
 //   ): Promise<void> {
@@ -27,7 +27,7 @@
 //     );
 //   }
 //
-//   async findById<T extends FastFireDocument<T>>(
+//   async findById<T extends FastFireDocument<any>>(
 //     documentClass: IDocumentClass<T>,
 //     id: string
 //   ): Promise<T | null> {
@@ -39,8 +39,8 @@
 //     return await FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
 //   }
 //
-//   async update<T extends FastFireDocument<T>>(
-//     document: FastFireDocument<T>,
+//   async update<T extends FastFireDocument<any>>(
+//     document: FastFireDocument<any>,
 //     fields: DocumentFields<T>
 //   ) {
 //     validateDocumentFields(document.constructor as IDocumentClass<any>, fields);
@@ -48,7 +48,7 @@
 //     await this.firestoreTransaction.update(document.reference, fields);
 //   }
 //
-//   async delete<T extends FastFireDocument<T>>(document: FastFireDocument<T>) {
+//   async delete<T extends FastFireDocument<any>>(document: FastFireDocument<any>) {
 //     // @ts-ignore
 //     await this.firestoreTransaction.delete(document.reference);
 //   }

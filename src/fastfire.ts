@@ -22,7 +22,7 @@ export abstract class FastFire {
   //   });
   // }
 
-  static async create<T extends FastFireDocument<T>>(
+  static async create<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>,
     fields: DocumentFields<T>
   ): Promise<T> {
@@ -37,7 +37,7 @@ export abstract class FastFire {
     return (await FastFireDocument.fromSnapshot(documentClass, snapshot)) as T;
   }
 
-  static async findById<T extends FastFireDocument<T>>(
+  static async findById<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>,
     id: string
   ): Promise<T | null> {
@@ -48,7 +48,7 @@ export abstract class FastFire {
     return await FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
   }
 
-  static where<T extends FastFireDocument<T>>(
+  static where<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>,
     fieldPath: keyof T | firebase.firestore.FieldPath,
     opStr: firebase.firestore.WhereFilterOp,
@@ -60,13 +60,13 @@ export abstract class FastFire {
     return new QueryChain(documentClass, query);
   }
 
-  static all<T extends FastFireDocument<T>>(
+  static all<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>
   ): QueryChain<T> {
     return new QueryChain(documentClass);
   }
 
-  static preload<T extends FastFireDocument<T>>(
+  static preload<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>,
     referenceFields: (keyof T)[]
   ): QueryChain<T> {

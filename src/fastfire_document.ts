@@ -115,7 +115,7 @@ export class FastFireDocument<T> {
     });
   }
 
-  static async fromSnapshot<T extends FastFireDocument<T>>(
+  static async fromSnapshot<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>,
     snapshot: FirestoreDocumentSnapshot
   ): Promise<T | null> {

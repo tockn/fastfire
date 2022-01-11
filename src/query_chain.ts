@@ -14,7 +14,7 @@ import {
   FirestoreCollectionReference,
 } from './firestore';
 
-export class QueryChain<T extends FastFireDocument<T>> {
+export class QueryChain<T extends FastFireDocument<any>> {
   documentClass: IDocumentClass<T>;
   query?: FirebaseQuery;
 

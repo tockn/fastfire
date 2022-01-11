@@ -5,7 +5,7 @@ import {
   validateRequiredDocumentFields,
 } from './validator';
 
-export const fastFireFieldsToFirebaseFields = <T extends FastFireDocument<T>>(
+export const fastFireFieldsToFirebaseFields = <T extends FastFireDocument<any>>(
   documentClass: IDocumentClass<T>,
   fields: DocumentFields<T>
 ): DocumentFields<T> => {

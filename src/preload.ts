@@ -1,6 +1,6 @@
 import { FastFireDocument } from './fastfire_document';
 
-export const preload = async <T extends FastFireDocument<T>>(
+export const preload = async <T extends FastFireDocument<any>>(
   document: T,
   referenceFields: (keyof T)[]
 ) => {

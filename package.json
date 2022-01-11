@@ -1,5 +1,5 @@
 {
-  "version": "0.3.2",
+  "version": "0.3.4",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -66,6 +66,6 @@
   },
   "dependencies": {
     "@google-cloud/firestore": "^5.0.2",
-    "firebase": "^9.6.1"
+    "firebase": "9.4.1"
   }
 }
