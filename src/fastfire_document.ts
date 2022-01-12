@@ -18,14 +18,20 @@ import {
 } from './firestore';
 
 export class FastFireDocument<T> {
+  static collectionRefMap: { [key: string]: string } = {};
+
   static referenceClassMaps: { [key: string]: ReferenceClassMap } = {};
   static referenceOptionsMaps: { [key: string]: ReferenceOptionsMap } = {};
 
   static fieldMaps: { [key: string]: FieldMap } = {};
   static fieldOptionsMaps: { [key: string]: FieldOptionsMap } = {};
 
+  static get collectionRef(): string {
+    return this.collectionRefMap[this.name];
+  }
+
   static get collection(): FirestoreCollectionReference {
-    return FastFire.firestore.collection(this.name);
+    return FastFire.firestore.collection(this.collectionRef);
   }
 
   // id is a firestore document id
@@ -71,7 +77,7 @@ export class FastFireDocument<T> {
   }
 
   get reference(): FirestoreDocumentReference {
-    return FastFire.firestore.collection(this.constructor.name).doc(this.id);
+    return FastFireDocument.collection.doc(this.id);
   }
 
   get documentClass(): IDocumentClass<any> {

@@ -50,6 +50,7 @@ FastFire.initialize(firebase.firestore());
 Define a class to treat as a Firebase document and extends `FastFireDocument` in that class.
 
 ```typescript
+@FastFireCollection("User")
 class User extends FastFireDocument<User> {
   // You need to write `FastFireField` decorator on the Firestore document field props.
   @FastFireField()
@@ -58,6 +59,7 @@ class User extends FastFireDocument<User> {
   bio!: string
 }
 
+@FastFireCollection("Article")
 class Article extends FastFireDocument<Article> {
   @FastFireField()
   title!: string
@@ -162,6 +164,7 @@ You can implement validations using the argument of FastFireField decorator.
 - Required Field Validation
 
 ```typescript
+@FastFireCollection("User")
 class User extends FastFireDocument<User> {
   @FastFireField({ required: true} )
   name!: string
@@ -175,6 +178,7 @@ await FastFire.create(User, { bio: "hello" }) // DocumentValidationError: "User"
 - Custom Validation
 
 ```typescript
+@FastFireCollection("User")
 class User extends FastFireDocument<User> {
   @FastFireField({ validate: User.validateName })
   name!: string

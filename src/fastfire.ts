@@ -31,7 +31,7 @@ export abstract class FastFire {
       fields
     );
     const docRef = await this.firestore
-      .collection(documentClass.name)
+      .collection(documentClass.collectionRef)
       .add(firebaseFields);
     const snapshot = await docRef.get();
     return (await FastFireDocument.fromSnapshot(documentClass, snapshot)) as T;
@@ -42,7 +42,7 @@ export abstract class FastFire {
     id: string
   ): Promise<T | null> {
     const snapshot = await this.firestore
-      .collection(documentClass.name)
+      .collection(documentClass.collectionRef)
       .doc(id)
       .get();
     return await FastFireDocument.fromSnapshot<T>(documentClass, snapshot);
@@ -55,7 +55,7 @@ export abstract class FastFire {
     value: any
   ): QueryChain<T> {
     const query = this.firestore
-      .collection(documentClass.name)
+      .collection(documentClass.collectionRef)
       .where(fieldPath as string, opStr, value);
     return new QueryChain(documentClass, query);
   }

@@ -12,11 +12,11 @@ export const validateDocumentFields = <T extends FastFireDocument<any>>(
     } else if (documentClass.referenceClassMap[key]) {
       validationResult = documentClass.referenceOptionsMap[key].validate(value);
     } else {
-      throw new UnknownFieldError(documentClass.name, key);
+      throw new UnknownFieldError(documentClass.collectionRef, key);
     }
     if (validationResult)
       throw new DocumentValidationError(
-        documentClass.name,
+        documentClass.collectionRef,
         `${key}: ${validationResult}`
       );
   }
@@ -28,7 +28,7 @@ export const validateRequiredDocumentFields = <T extends FastFireDocument<any>>(
 ): void => {
   for (const [key, options] of Object.entries(documentClass.fieldOptionsMap)) {
     if (options.required && !fields[key as keyof typeof fields])
-      throw new RequiredFieldError(documentClass.name, key);
+      throw new RequiredFieldError(documentClass.collectionRef, key);
   }
 };
 

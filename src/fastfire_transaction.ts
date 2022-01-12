@@ -22,7 +22,7 @@
 //     );
 //     // @ts-ignore
 //     this.firestoreTransaction = await this.firestoreTransaction.set(
-//       FastFire.firestore.collection(documentClass.name).doc(),
+//       FastFire.firestore.collection(documentClass.collectionRef).doc(),
 //       firebaseFields
 //     );
 //   }
@@ -33,7 +33,7 @@
 //   ): Promise<T | null> {
 //     const snapshot = await this.firestoreTransaction.get(
 //       // @ts-ignore
-//       FastFire.firestore.collection(documentClass.name).doc(id)
+//       FastFire.firestore.collection(documentClass.collectionRef).doc(id)
 //     );
 //     // @ts-ignore
 //     return await FastFireDocument.fromSnapshot<T>(documentClass, snapshot);

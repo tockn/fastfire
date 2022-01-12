@@ -132,7 +132,7 @@ export class QueryChain<T extends FastFireDocument<any>> {
       snapshots = await this.query.get();
     } else {
       snapshots = await FastFire.firestore
-        .collection(this.documentClass.name)
+        .collection(this.documentClass.collectionRef)
         .get();
     }
     const docs: T[] = [];

@@ -4,6 +4,7 @@ import { FirestoreDocumentReference } from './firestore';
 export interface IDocumentClass<T> {
   new (...args: any): T;
   name: string;
+  readonly collectionRef: string;
   readonly referenceClassMap: ReferenceClassMap;
   readonly referenceOptionsMap: ReferenceOptionsMap;
   readonly fieldMap: FieldMap;

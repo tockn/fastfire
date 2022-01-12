@@ -10,7 +10,9 @@ export const preload = async <T extends FastFireDocument<any>>(
       const descriptor = Object.getOwnPropertyDescriptor(document, field);
       if (!descriptor) {
         throw new PreloadError(
-          `${document.constructor.name} does not have property "${field}"`
+          `${
+            FastFireDocument.collectionRefMap[document.constructor.name]
+          } does not have property "${field}"`
         );
       }
       if (
@@ -18,7 +20,9 @@ export const preload = async <T extends FastFireDocument<any>>(
         !(descriptor.value instanceof FastFireDocument)
       ) {
         throw new PreloadError(
-          `${document.constructor.name}.${field} is not FastFireDocument`
+          `${
+            FastFireDocument.collectionRefMap[document.constructor.name]
+          }.${field} is not FastFireDocument`
         );
       }
       descriptor.value.reference
