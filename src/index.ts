@@ -64,13 +64,14 @@
 //   messagingSenderId: process.env.messagingSenderId,
 //   appId: process.env.appId,
 // };
-
+//
 // import { FastFire } from './fastfire';
 // import { FastFireDocument } from './fastfire_document';
 // import firebase from 'firebase/compat/app';
 // import 'firebase/compat/firestore';
 // import { FastFireField } from './fastfire_field';
 // import { FastFireReference } from './fastfire_reference';
+// import { FastFireCollection } from './fastfire_collection';
 //
 // const firebaseConfig = {
 //   apiKey: 'AIzaSyBeNk3HlfxpCz7VM0M7dlBSKgD5lxs2LLg',
@@ -85,6 +86,7 @@
 //
 // FastFire.initialize(firebase.firestore());
 //
+// @FastFireCollection('User')
 // export class User extends FastFireDocument<User> {
 //   @FastFireField()
 //   name!: string;
@@ -93,6 +95,7 @@
 //   bio!: string;
 // }
 //
+// @FastFireCollection('Desk')
 // export class Desk extends FastFireDocument<Desk> {
 //   @FastFireField()
 //   totalPrice!: number;
@@ -114,7 +117,7 @@
 //   // const user = await FastFire.findById(User, 'XtckFWASbiYuXEaGQxef');
 //   // if (!user) return;
 //
-//   const desk = await FastFire.findById(Desk, '28qSVhNds05fKyxqcuBy');
+//   const desk = await FastFire.findById(Desk, '2BFN5x1nAVlG0Jn5dlla');
 //   console.log(desk?.toJson());
 //
 //   // const desks = await FastFire.preload(Desk, ['author'])
@@ -133,6 +136,7 @@ import { FastFireDocument } from './fastfire_document';
 import { FastFireDocumentOptions } from './types';
 import { FastFireField } from './fastfire_field';
 import { FastFireReference } from './fastfire_reference';
+import { FastFireCollection } from './fastfire_collection';
 
 export {
   FastFire,
@@ -140,4 +144,5 @@ export {
   FastFireDocumentOptions,
   FastFireField,
   FastFireReference,
+  FastFireCollection,
 };

@@ -76,8 +76,14 @@ export class FastFireDocument<T> {
     return FastFireDocument.fieldMaps[this.constructor.name];
   }
 
+  get collection(): FirestoreCollectionReference {
+    return FastFire.firestore.collection(
+      FastFireDocument.collectionRefMap[this.constructor.name]
+    );
+  }
+
   get reference(): FirestoreDocumentReference {
-    return FastFireDocument.collection.doc(this.id);
+    return this.collection.doc(this.id);
   }
 
   get documentClass(): IDocumentClass<any> {
