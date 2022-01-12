@@ -73,15 +73,6 @@
 // import { FastFireReference } from './fastfire_reference';
 // import { FastFireCollection } from './fastfire_collection';
 //
-// const firebaseConfig = {
-//   apiKey: 'AIzaSyBeNk3HlfxpCz7VM0M7dlBSKgD5lxs2LLg',
-//   authDomain: 'desktour-dev.firebaseapp.com',
-//   projectId: 'desktour-dev',
-//   storageBucket: 'desktour-dev.appspot.com',
-//   messagingSenderId: '422473705553',
-//   appId: '1:422473705553:web:43d7b2a303d38f7eb77070',
-// };
-//
 // firebase.initializeApp(firebaseConfig);
 //
 // FastFire.initialize(firebase.firestore());
