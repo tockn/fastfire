@@ -3,7 +3,7 @@ import { DocumentFields, IDocumentClass } from './types';
 import { FastFireDocument } from './fastfire_document';
 import { unique } from './utils';
 import { fastFireFieldsToFirebaseFields } from './document_converter';
-import { Firestore } from './firestore';
+import { Firestore, FirestoreDocumentReference } from './firestore';
 import firebase from 'firebase/compat/app';
 
 export abstract class FastFire {
@@ -24,15 +24,25 @@ export abstract class FastFire {
 
   static async create<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>,
-    fields: DocumentFields<T>
+    fields: DocumentFields<T>,
+    id?: string
   ): Promise<T> {
     const firebaseFields = fastFireFieldsToFirebaseFields(
       documentClass,
       fields
     );
-    const docRef = await this.firestore
-      .collection(documentClass.collectionRef)
-      .add(firebaseFields);
+    let docRef: FirestoreDocumentReference;
+    if (id) {
+      await this.firestore
+        .collection(documentClass.collectionRef)
+        .doc(id)
+        .set(firebaseFields);
+      docRef = this.firestore.collection(documentClass.collectionRef).doc(id);
+    } else {
+      docRef = await this.firestore
+        .collection(documentClass.collectionRef)
+        .add(firebaseFields);
+    }
     const snapshot = await docRef.get();
     return (await FastFireDocument.fromSnapshot(documentClass, snapshot)) as T;
   }
@@ -55,7 +65,7 @@ export abstract class FastFire {
     value: any
   ): QueryChain<T> {
     const query = this.firestore
-      .collection(documentClass.collectionRef)
+      .collection(documentClass.name)
       .where(fieldPath as string, opStr, value);
     return new QueryChain(documentClass, query);
   }
