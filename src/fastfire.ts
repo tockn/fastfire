@@ -60,7 +60,7 @@ export abstract class FastFire {
 
   static where<T extends FastFireDocument<any>>(
     documentClass: IDocumentClass<T>,
-    fieldPath: keyof T | firebase.firestore.FieldPath,
+    fieldPath: keyof T | firebase.firestore.FieldPath | '__name__',
     opStr: firebase.firestore.WhereFilterOp,
     value: any
   ): QueryChain<T> {

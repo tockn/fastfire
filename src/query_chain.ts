@@ -39,7 +39,7 @@ export class QueryChain<T extends FastFireDocument<any>> {
   }
 
   where(
-    fieldPath: keyof T | FieldPath,
+    fieldPath: keyof T | FieldPath | '__name__',
     opStr: WhereFilterOp,
     value: any
   ): QueryChain<T> {
